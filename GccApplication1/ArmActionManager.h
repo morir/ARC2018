@@ -26,7 +26,7 @@
 #define CorrectionValue		(20) // ï‚ê≥íl
 
 // ------------------ Method Definition ------------------
-void initDumpMotor(void);
+void initArmMotor(void);
 void FindFormation(void);
 void CatchAndReleaseFormation(void);
 void ArmOpenFormation(void);

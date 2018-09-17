@@ -16,7 +16,7 @@
 // Arm用モータの初期設定
 // Arm用モータを宝物検索用形態(ライントレース用)の位置に設定
 /************************************************************************/
-void initDumpMotor(void) {
+void initArmMotor(void) {
 	MotorControlJoint(WRIST_MOTOR, 200, 512);
 	executeRotate(SHOULDER_MOTOR, 100, 680, 680);
 	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);

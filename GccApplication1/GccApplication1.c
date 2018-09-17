@@ -26,16 +26,12 @@
 #define _LED_ON_
 
 // ------------------ Method Definition ------------------
-void executeTraceProcess(void);
-void executeHunt1And2TraceProcess(void);
-void executeShortTraceProcess(void);
-void executeFinalRoundTraceProcess(void);
+void execute2018PreExamination(void);
 
 void treasureHunt_01(void);
 void treasureHunt_02(void);
 void treasureHunt_03(void);
 
-void initCargoBedMotor(void);
 void dumpTreasures(void);
 
 void executeFinalAction(void);
@@ -68,27 +64,17 @@ int main(void) {
     initEmergencyStop();
     setLED();
     initIRSensor();
-	initTraceAction();
-	initSensorHistory();
-	initActionTable();
     MotorInit();
     initSerial();
-	//sensorDebug();//センサー値の確認だけをしたい場合、コメントアウトを解除
-	initCargoBedMotor();
-	initDumpMotor();
+	sensorDebug();//センサー値の確認だけをしたい場合、コメントアウトを解除
+	Debug_AllMotorCurrentAngle();// 現在のモータ角度を表示(Debug用)
 
-#if(0)
-	// 現在のモータ角度を表示(Debug用)
-	Debug_AllMotorCurrentAngle();
+	initArmMotor();
 
-	LOG_DEBUG("Call initDumpMotor() %s\r\n", "");
- 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	initDumpMotor();
-	
-	
-//	LOG_DEBUG("Call FindFormation() %s\r\n", "");
-//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-//	FindFormation();
+    //2018年事前審査用動作実行
+    execute2018PreExamination();
+
+	FindFormation();
 
 	LOG_DEBUG("Call ArmOpenFormation() %s\r\n", "");
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
@@ -98,142 +84,13 @@ int main(void) {
 	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
 	CatchAndReleaseFormation();
 
-#else
-	// 現在のモータ角度を表示(Debug用)
-//	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-//	Debug_AllMotorCurrentAngle();
-	
-	// 検出し、載せるまでテスト
-//	treasureHunt_01();
-#endif
-
-	getSensorPattern();
-		
-	// トレース動作開始
-	//executeTraceProcess();
-	//executeShortTraceProcess();
-	executeHunt1And2TraceProcess();
-    //executeFinalRoundTraceProcess();
-
     // ゴール判定後の動作実質ここから開始？
 	executeFinalAction();
 	StopMove();
 }
 
-/**
-* ライントレース動作
-* @brief ライントレース動作
-* @return なし
-* @detail ゴール判定条件を満たすまでライントレース動作を行う。
-*/
-void executeTraceProcess(void) {
-	traceForwardArea_01();
-	traceForwardArea_02();
-	traceForwardArea_03();
-	traceForwardArea_04();
-	traceForwardArea_05();
-	treasureHunt_01();
-	traceBackwardArea_01();
-	traceBackwardArea_02();
-	traceBackwardArea_03();
-	traceBackwardArea_04();
-	treasureHunt_02();
-	traceBackwardArea_06();
-	traceBackwardArea_07();
-	traceBackwardArea_08();
-	traceBackwardArea_09();
-	traceBackwardArea_10();
-	traceBackwardArea_11();
-	traceBackwardArea_12();
-	traceBackwardArea_13();
-	treasureHunt_03();
-	traceBackwardArea_14();
-	traceBackwardArea_15();
-	traceBackwardArea_16();
-	traceBackwardArea_17();
-	traceBackwardArea_18();
-}
-
-/**
-* 宝物1と宝物2を取るライントレース動作
-* @brief ライントレース動作
-* @return なし
-* @detail ゴール判定条件を満たすまでライントレース動作を行う。
-*/
-void executeHunt1And2TraceProcess(void) {
-	traceForwardArea_01();
-	traceForwardArea_02();
-	traceForwardArea_03();
-	traceForwardArea_04();
-	traceForwardArea_05();
-	treasureHunt_01();
-	traceBackwardArea_01();
-	traceBackwardArea_02();
-	traceBackwardArea_03();
-	traceBackwardArea_04();
-	treasureHunt_02();
-	traceBackLowMoveArea_01();
-	shortTraceToRightTurn();
-	shortTraceToRightTurn();
-	traceBackwardArea_18();
-}
-
-/**
-* 宝物1個の場合のライントレース動作
-* @brief 宝物1個の場合のライントレース動作
-* @return なし
-* @detail ゴール判定条件を満たすまでライントレース動作を行う。
-*/
-void executeShortTraceProcess(void) {
-	//初期動作（少しだけ直進）
-	StraightMove();
-	_delay_ms(100);	// 10ms 間隔を空ける
-
-	shortTraceToLeftTurn();
-	shortTraceToLeftTurn();
-	shortTraceToLeftTurn();
-	shortTraceToRightTurn();
-	shortTraceToRightTurn();
-	treasureHunt_01();
-	shortTraceToLeftTurn();
-	shortTraceToLeftTurn();
-	shortTraceToRightTurn();
-	shortTraceToRightTurn();
-	shortTraceToRightTurn();
-	traceBackwardArea_18();
-}
-
-/************************************************************************/
-/* 決勝ラウンド用のライントレース */
-/************************************************************************/
-void executeFinalRoundTraceProcess(void) {
-	traceForwardArea_01();
-	traceForwardArea_02();
-	traceForwardArea_03();
-	traceForwardArea_04();
-	traceForwardArea_05();
-	treasureHunt_01();//宝物白
-	traceBackwardArea_01();
-	traceBackwardArea_02();
-	traceBackwardArea_03();
-	traceBackwardArea_04();
-	treasureHunt_02();//宝物銀１個目（予選と同じ）
-	traceBackwardArea_06();
-	treasureHunt_02();//宝物銀２個目（決勝で追加）
-	traceBackwardArea_07();
-	traceBackwardArea_08();    
-	traceBackwardArea_09();
-	traceBackwardArea_10();
-	traceBackwardArea_11();
-	treasureHunt_02();//宝物金１個目（決勝で追加）
-	traceBackwardArea_12();
-	treasureHunt_02();//宝物金２個目（決勝で追加）
-	treasureHunt_03();//宝物金３個目（予選と同じ）
-	traceBackwardArea_14();
-	traceBackwardArea_15();
-	traceBackwardArea_16();
-	traceBackwardArea_17();
-	traceBackwardArea_18();
+void execute2018PreExamination(void) {
+	LOG_DEBUG("Call CatchAndReleaseFormation() %s\r\n", "");
 }
 
 void sensorDebug(void) {
@@ -249,12 +106,10 @@ void sensorDebug(void) {
 		((IR[RIGHT_INSIDE]  <= COMPARE_VALUE) ? 1 : 0),
 		((IR[RIGHT_CENTER]  <= COMPARE_VALUE) ? 1 : 0),
 		((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE) ? 1 : 0));
-		currentTraceAction = getActionWithHistory();
 		LOG_WARN("currentTraceAction %d\r\n", currentTraceAction);
 		_delay_ms(500);
 	}
 }
-
 
 /*
  * 宝物 1 のトレース動作
@@ -428,16 +283,6 @@ void executeFinalAction(void)
 	MotorControl(LEFT_MOTOR, 40);
 	_delay_ms(500);
 	StopMove();//停止を実行
-}
-
-/************************************************************************/
-// 荷台用モータの初期設定
-// 荷台用モーターを少し進行方向に傾ける。
-/************************************************************************/
-void initCargoBedMotor(void) {
-	GetCurrentAngle(CARGO_BED_MOTOR);
-	//最大速度で、642の位置へ動かす
-	MotorControlJoint( CARGO_BED_MOTOR, 0, 550 );//！要調整
 }
 
 /************************************************************************/

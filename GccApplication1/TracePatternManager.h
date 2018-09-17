@@ -21,8 +21,6 @@
 // IR Sensor
 unsigned int IR[6 + 1];//要素数は (センサ数 + 1)
 
-int ActionTable[64];
-
 // IRの状態(BITパターン)
 int IR_BitPattern;
 int IR_BitPatternHistory[HISTORY_MAXSIZE];
@@ -46,11 +44,8 @@ enum patternIndex {
 
 // ------------------ Method Definition ------------------
 
-void initActionTable(void);
 void initSensorHistory(void);
 void getSensors(void);
 int getSensorPattern(void);
-int getActionWithHistory(void);
-void setSensorHistory(int actionPattern);
 
 #endif /* TRACEPATTERNMANAGER_H_ */

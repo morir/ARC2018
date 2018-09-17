@@ -114,9 +114,6 @@
 #define COMPARE_VALUE_OTHER 600//ライントレース用の追加した1個のセンサー
 #define COMPARE_VALUE_GOAL 700//ゴール判定用のセンサー用
 
-// ゴールセンサの検知最大数
-#define GOAL_DETECTED_MAX_COUNT 10
-
 unsigned int values;
 
 void initIRSensor(void);
