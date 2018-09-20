@@ -271,7 +271,7 @@ void executeFinalAction(void)
 	_delay_ms(10);
 
 	// 肩を前に出す
-	MotorControlJoint(SHOULDER_MOTOR, 100, 600);
+	MotorControlJoint(V_MOV_SHOULDER_MOTOR, 100, 600);
 	_delay_ms(1000);//！要調整
 
 	/* 荷台を傾けて宝物を落とす */
@@ -290,10 +290,10 @@ void executeFinalAction(void)
 /************************************************************************/
 void dumpTreasures(void) {
 	_delay_ms(1000);//1秒待つ⇒動作に合わせて変更してください
-	MotorControlJoint( CARGO_BED_MOTOR, 30, 352 );//モーターを後方にゆっくり傾ける！要調整
-	_delay_ms(6000);//6秒継続
-	MotorControlJoint( CARGO_BED_MOTOR, 100, 512 );//モーターをセンター位置に戻す！要調整
-	_delay_ms(3000);//3秒待つ⇒動作に合わせて変更してください
+	//MotorControlJoint( CARGO_BED_MOTOR, 30, 352 );//モーターを後方にゆっくり傾ける！要調整
+	//_delay_ms(6000);//6秒継続
+	//MotorControlJoint( CARGO_BED_MOTOR, 100, 512 );//モーターをセンター位置に戻す！要調整
+	//_delay_ms(3000);//3秒待つ⇒動作に合わせて変更してください
 
 }
 

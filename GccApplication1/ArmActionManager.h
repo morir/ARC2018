@@ -13,10 +13,12 @@
 #include "include/dynamixel.h"
 
 // ------------------ Defined ------------------
-#define SHOULDER_MOTOR       12      // Shoulder Motor address
-#define UPPER_ARM_MOTOR      25      // Upper arm Motor address
-#define FORE_ARM_MOTOR       14      // ForeArm Motor address
-#define WRIST_MOTOR          23      // Wrist Motor address
+#define H_MOV_SHOULDER_MOTOR    18	    // 水平方向に動く肩関節のモーター
+#define V_MOV_SHOULDER_MOTOR    12      // 垂直方向に動く肩関節のモーター
+#define ELBOW_MOTOR             25      // 肘関節のモーター
+#define WRIST_MOTOR             14      // 手首関節のモーター
+#define HAND_MOTOR              23      // 手先関節のモーター
+
 
 // MX-12W Control Table Address
 #define CTRL_TBL_ADDR_PRESENT_POSITION_L	(36)	// Lowest byte of Current Position

@@ -17,22 +17,25 @@
 // Arm用モータを宝物検索用形態(ライントレース用)の位置に設定
 /************************************************************************/
 void initArmMotor(void) {
-	MotorControlJoint(WRIST_MOTOR, 200, 512);
-	executeRotate(SHOULDER_MOTOR, 100, 680, 680);
-	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
-	executeRotate(FORE_ARM_MOTOR, 100, 300, 300);
+
+	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 0);
+	executeRotate(V_MOV_SHOULDER_MOTOR, 50, 512, 0);
+	executeRotate(ELBOW_MOTOR, 50, 512, 0);
+	executeRotate(WRIST_MOTOR, 50, 512, 0);
+	executeRotate(HAND_MOTOR, 50, 512, 0);
 }
 
 /************************************************************************/
-// 宝物検索用形態
-// 宝物検索用の位置に設定する。
+// ターゲット検索用形態
+// ターゲット検索用の形状に変形する。
 /************************************************************************/
 void FindFormation(void)
 {
-	MotorControlJoint(WRIST_MOTOR, 200, 512);
-	executeRotate(SHOULDER_MOTOR, 100, 680, 680);
-	executeRotate(UPPER_ARM_MOTOR, 100, 70, 70);
-	executeRotate(FORE_ARM_MOTOR, 100, 300, 300);
+	MotorControlJoint(HAND_MOTOR, 200, 512);
+	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 0);
+	executeRotate(V_MOV_SHOULDER_MOTOR, 100, 680, 680);
+	executeRotate(ELBOW_MOTOR, 100, 70, 70);
+	executeRotate(WRIST_MOTOR, 100, 300, 300);
 }
 
 
@@ -43,10 +46,11 @@ void FindFormation(void)
 void ArmOpenFormation(void)
 {
 	//-- 下げてひらく
-	executeRotate(WRIST_MOTOR, 200, 770, 770);
-	executeRotate(FORE_ARM_MOTOR, 150, 360, 360);
-	executeRotate(UPPER_ARM_MOTOR, 150, 120, 120);
-	executeRotate(SHOULDER_MOTOR, 150, 500, 500);
+	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 0);
+	executeRotate(HAND_MOTOR, 200, 770, 770);
+	executeRotate(ELBOW_MOTOR, 150, 360, 360);
+	executeRotate(WRIST_MOTOR, 150, 120, 120);
+	executeRotate(V_MOV_SHOULDER_MOTOR, 150, 500, 500);
 }
 
 /************************************************************************/
@@ -57,20 +61,20 @@ void ArmOpenFormation(void)
 void CatchAndReleaseFormation(void)
 {
 	//-- 掴む
-	executeRotate(WRIST_MOTOR, 200, 512, 512 );
+	executeRotate(HAND_MOTOR, 200, 512, 512 );
 
 	//-- 持ち上げ開始	
-	executeRotate(UPPER_ARM_MOTOR, 100, 250, 250);
-	MotorControlJoint(SHOULDER_MOTOR, 100, 500);
-	MotorControlJoint(FORE_ARM_MOTOR, 100, 680);
+	executeRotate(ELBOW_MOTOR, 100, 250, 250);
+	MotorControlJoint(V_MOV_SHOULDER_MOTOR, 100, 500);
+	MotorControlJoint(ELBOW_MOTOR, 100, 680);
 
 	//-- 持ち上げ途中
-	executeRotate(UPPER_ARM_MOTOR, 100, 500, 500);
+	executeRotate(ELBOW_MOTOR, 100, 500, 500);
 
 	//-- 落とす直前
-	executeRotate(FORE_ARM_MOTOR, 100, 700, 700);
-	MotorControlJoint( UPPER_ARM_MOTOR, 100, 700 );
-	executeRotate( SHOULDER_MOTOR, 100, 410, 410 );
+	executeRotate(ELBOW_MOTOR, 100, 700, 700);
+	MotorControlJoint( ELBOW_MOTOR, 100, 700 );
+	executeRotate( V_MOV_SHOULDER_MOTOR, 100, 410, 410 );
 	_delay_ms(500);//適切なウェイト時間を設定
 
 	//-- 落とす
@@ -79,12 +83,12 @@ void CatchAndReleaseFormation(void)
 	_delay_ms(700);//1秒待つ⇒動作に合わせて変更してください
 
 	//-- 宝物検索用形態に移行するための準備
-	MotorControlJoint(UPPER_ARM_MOTOR, 100, 280);
-	executeRotate(SHOULDER_MOTOR, 40, 580, 580);
+	MotorControlJoint(ELBOW_MOTOR, 100, 280);
+	executeRotate(V_MOV_SHOULDER_MOTOR, 40, 580, 580);
 	MotorControlJoint(WRIST_MOTOR, 200, 512);
-	MotorControlJoint(FORE_ARM_MOTOR, 100, 400);	
-	MotorControlJoint(SHOULDER_MOTOR, 100, 630);
-	executeRotate(UPPER_ARM_MOTOR, 100, 120, 120);
+	MotorControlJoint(ELBOW_MOTOR, 100, 400);	
+	MotorControlJoint(V_MOV_SHOULDER_MOTOR, 100, 630);
+	executeRotate(ELBOW_MOTOR, 100, 120, 120);
 	
 	// 宝物検索用ライントレース形態に戻す
 	FindFormation();
@@ -97,10 +101,11 @@ void CatchAndReleaseFormation(void)
 /************************************************************************/
 void Debug_AllMotorCurrentAngle(void)
 {
-	LOG_ERROR("GetCurrentAngle(SHOULDER_MOTOR) %d\r\n", GetCurrentAngle(SHOULDER_MOTOR));
-	LOG_ERROR("GetCurrentAngle(UPPER_ARM_MOTOR) %d\r\n", GetCurrentAngle(UPPER_ARM_MOTOR));
-	LOG_ERROR("GetCurrentAngle(FORE_ARM_MOTOR) %d\r\n", GetCurrentAngle(FORE_ARM_MOTOR));
+	LOG_ERROR("GetCurrentAngle(H_MOV_SHOULDER_MOTOR) %d\r\n", GetCurrentAngle(H_MOV_SHOULDER_MOTOR));
+	LOG_ERROR("GetCurrentAngle(V_MOV_SHOULDER_MOTOR) %d\r\n", GetCurrentAngle(V_MOV_SHOULDER_MOTOR));
+	LOG_ERROR("GetCurrentAngle(ELBOW_MOTOR) %d\r\n", GetCurrentAngle(ELBOW_MOTOR));
 	LOG_ERROR("GetCurrentAngle(WRIST_MOTOR) %d\r\n", GetCurrentAngle(WRIST_MOTOR));
+	LOG_ERROR("GetCurrentAngle(HAND_MOTOR) %d\r\n", GetCurrentAngle(HAND_MOTOR));
 }
 
 /**
@@ -113,13 +118,19 @@ void Debug_AllMotorCurrentAngle(void)
 void executeRotate(int motorId, int speed, int angle, int targetangle){
 	//設定角度への動作を実行
 	MotorControlJoint( motorId, speed, angle );
-	
+
+	if (angle == 0) {
+        // angleが0の場合はすぐに処理を抜ける。
+        _delay_ms(10);
+        return;
+    }
+
 	if((angle - GetCurrentAngle(motorId)) > 0) 
 	{
 		// 目標角度に達していない間は動作する
 		while( (targetangle - CorrectionValue) > GetCurrentAngle(motorId))
 		{
-			_delay_ms(50);//適切なウェイト時間を設定
+			_delay_ms(10);//適切なウェイト時間を設定
 		}
 	}
 	else
@@ -127,7 +138,7 @@ void executeRotate(int motorId, int speed, int angle, int targetangle){
 		// 目標角度に達していない間は動作する
 		while( GetCurrentAngle(motorId) > (targetangle + CorrectionValue))
 		{
-			_delay_ms(50);//適切なウェイト時間を設定
+			_delay_ms(10);//適切なウェイト時間を設定
 		}		
 	}
 }

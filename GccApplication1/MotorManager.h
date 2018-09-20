@@ -32,8 +32,6 @@
 #define P_GOAL_SPEED_H      33
 #define P_EEP_LOCK          47
 
-#define CARGO_BED_MOTOR	     18		 // 荷台用モータのID
-
 // MX-12W Control Table Address
 #define CTRL_TBL_ADDR_PRESENT_SPEED_L	(38)	// Lowest byte of Current Speed 
 #define CTRL_TBL_ADDR_PRESENT_SPEED_H	(39)	// Highest byte of Current Speed
