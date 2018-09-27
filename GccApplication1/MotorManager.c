@@ -321,7 +321,7 @@ void stopMoveLessThanVal(int maxVal){
 }
 
 void SetBaseSpeed(int val) {
-    if (val =< MAX_SPEED) {
+    if (val <= MAX_SPEED) {
         BaseSpeed = val;
     }
 }
