@@ -31,11 +31,11 @@ void initArmMotor(void) {
 /************************************************************************/
 void FindFormation(void)
 {
-	MotorControlJoint(HAND_MOTOR, 200, 512);
-	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 0);
-	executeRotate(V_MOV_SHOULDER_MOTOR, 100, 680, 680);
-	executeRotate(ELBOW_MOTOR, 100, 70, 70);
-	executeRotate(WRIST_MOTOR, 100, 300, 300);
+	executeRotate(H_MOV_SHOULDER_MOTOR, 60, 512, 0);
+	executeRotate(V_MOV_SHOULDER_MOTOR, 60, 590, 590);
+	executeRotate(ELBOW_MOTOR, 60, 90, 90);
+	executeRotate(WRIST_MOTOR, 60, 380, 380);
+	executeRotate(HAND_MOTOR, 60, 800, 800);
 }
 
 

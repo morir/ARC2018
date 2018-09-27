@@ -44,9 +44,6 @@
 #define AXS1_ADDR_IR_LIGHT_CENTER_DATA	(30)	// 中央の照度センサ値
 #define AXS1_ADDR_IR_LIGHT_RIGHT_DATA	(31)	// 右側の照度センサ値
 
-// Speed settings
-#define MAX_SPEED (130)
-
 // Trace pattern
 #define TRACE_UNDEFINED			(-1)// 未定義(前回の動作を継続)
 #define TRACE_STRAIGHT			0	// 直進
@@ -70,16 +67,17 @@
 #define TRACE_FINALACTION		999	// ゴール動作
 
 #define MOTOR_MOVE_UP_VAL		(20)	//モーターが低速だった場合この値分を付加して駆動させる
-#define TURN_SPEED_BASE			(50)	//旋回のベース速度
-#define BASE_SPEED_INIT_VAL		(80)	//ベース速度の初期値
 #define TURN_SPEED_JUDGE_VAL	(400)	//定常旋回する基準速度
 #define TRESURE_FIND_INSIDEMORTER_MOVE_VAL	(20)	//内側のモータ速度を1～100を％で指定。100で直進、1で内側モータほぼ停止。
 #define BASE_SPEED_BY_TURF_AREA (50)    //芝エリア用のベース速度
 #define BASE_SPEED_BY_SLOWMOVE (90)    //芝エリア前のセクションのMAXベース速度
 
-#define MOTOR_MOVE_UP_VAL	(20)	//モーターが低速だった場合この値分を付加して駆動させる
-#define SLOW_STRAIGHT_VAL	(120)	//旋回位置微調整で動作する速度(前進用)
-#define SLOW_BACK_VAL	(100)	//旋回位置微調整で動作する速度(後進用)
+// Speed settings
+#define BASE_SPEED_INIT_VAL		(50)	//ベース速度の初期値
+#define MAX_SPEED               (100)
+#define TURN_SPEED_BASE			(50)	//旋回のベース速度
+#define SLOW_STRAIGHT_VAL       (70)	//旋回位置微調整で動作する速度(前進用)
+#define SLOW_BACK_VAL	        (50)	//旋回位置微調整で動作する速度(後進用)
 
 // ------------------ Method Definition ------------------
 void MotorInit(void);
@@ -115,6 +113,10 @@ int GetCurrentSpeedL(void);
 int GetCurrentSignedSpeedR(void);
 int GetCurrentSignedSpeedL(void);
 int GetCurrentAngle(int motorId);
+
+void SetBaseSpeed(int val);
+void UpBaseSpeed(void);
+void DownBaseSpeed(void);
 
 void GetAXS1SensorFireData(int *out_fire_data_left, int *out_fire_data_center, int *out_fire_data_right);
 

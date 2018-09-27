@@ -320,6 +320,24 @@ void stopMoveLessThanVal(int maxVal){
 	}
 }
 
+void SetBaseSpeed(int val) {
+    if (val =< MAX_SPEED) {
+        BaseSpeed = val;
+    }
+}
+
+void UpBaseSpeed(){
+    if (BaseSpeed < MAX_SPEED) {
+        BaseSpeed++;
+    }
+}
+
+void DownBaseSpeed() {
+    if (BaseSpeed > BASE_SPEED_INIT_VAL) {
+        BaseSpeed--;
+    }
+}
+
 void PrintErrorCode() {
     if(dxl_get_rxpacket_error(ERRBIT_VOLTAGE) == 1)
     LOG_ERROR("Input voltage error!\n");

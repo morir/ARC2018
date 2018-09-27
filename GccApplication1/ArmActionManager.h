@@ -13,11 +13,11 @@
 #include "include/dynamixel.h"
 
 // ------------------ Defined ------------------
-#define H_MOV_SHOULDER_MOTOR    18	    // 水平方向に動く肩関節のモーター
-#define V_MOV_SHOULDER_MOTOR    12      // 垂直方向に動く肩関節のモーター
-#define ELBOW_MOTOR             25      // 肘関節のモーター
-#define WRIST_MOTOR             14      // 手首関節のモーター
 #define HAND_MOTOR              23      // 手先関節のモーター
+#define WRIST_MOTOR             14      // 手首関節のモーター
+#define ELBOW_MOTOR             25      // 肘関節のモーター
+#define V_MOV_SHOULDER_MOTOR    12      // 垂直方向に動く肩関節のモーター
+#define H_MOV_SHOULDER_MOTOR    18	    // 水平方向に動く肩関節のモーター
 
 
 // MX-12W Control Table Address

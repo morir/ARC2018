@@ -31,6 +31,7 @@ void execute2018PreExamination(void);
 void treasureHunt_01(void);
 void treasureHunt_02(void);
 void treasureHunt_03(void);
+void TreasureFindingZigZagMove(int *counter);
 
 void dumpTreasures(void);
 
@@ -50,6 +51,8 @@ void LED_off(int i);
 int serCmd[SERIAL_BUFFER_SIZE] = {0};
 
 int isSearchingLeft = 0;
+static long m_MoveCounter = 0;
+static int m_MoveDirerctionFlag = 0;
 
 // ------------------ Method ------------------
 
@@ -66,49 +69,97 @@ int main(void) {
     initIRSensor();
     MotorInit();
     initSerial();
-	sensorDebug();//センサー値の確認だけをしたい場合、コメントアウトを解除
-	Debug_AllMotorCurrentAngle();// 現在のモータ角度を表示(Debug用)
+	//sensorDebug();//センサー値の確認だけをしたい場合、コメントアウトを解除
+	//Debug_AllMotorCurrentAngle();// 現在のモータ角度を表示(Debug用)
 
-	initArmMotor();
+	//initArmMotor();
 
     //2018年事前審査用動作実行
     execute2018PreExamination();
 
-	FindFormation();
-
-	LOG_DEBUG("Call ArmOpenFormation() %s\r\n", "");
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	ArmOpenFormation();
-	
-	LOG_DEBUG("Call CatchAndReleaseFormation() %s\r\n", ""); 
-	_delay_ms(2000);//1秒待つ⇒動作に合わせて変更してください
-	CatchAndReleaseFormation();
-
-    // ゴール判定後の動作実質ここから開始？
-	executeFinalAction();
-	StopMove();
 }
 
 void execute2018PreExamination(void) {
-	LOG_DEBUG("Call CatchAndReleaseFormation() %s\r\n", "");
+    LOG_DEBUG("Call execute2018PreExamination() %s\r\n", "");
+
+    int moveCount = 0;
+    int MAX_COUNT = 500;
+    _delay_ms(500);
+
+    FindFormation();//アームを検索形態
+
+	StopMove();
+    _delay_ms(500);
+    
+    // 直進する
+    while (moveCount < MAX_COUNT) {
+        StraightMove();
+        _delay_ms(10);
+        UpBaseSpeed();
+        moveCount++;
+    }
+	StopMove();
+	_delay_ms(500);
+    SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
+
+
+    // 左旋回
+    LeftTurnMove();
+    _delay_ms(1000);
+
+	StopMove();
+	_delay_ms(500);
+    SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
+
+    // 直進する
+    while (moveCount < MAX_COUNT) {
+        StraightMove();
+        _delay_ms(10);
+        UpBaseSpeed();
+        moveCount++;
+    }
+    StopMove();
+    _delay_ms(500);
+    SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
+
+    // 右旋回
+    RightTurnMove();
+    _delay_ms(1000);
+
+    StopMove();
+    _delay_ms(500);
+    SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
+
+    // 直進する
+    while (moveCount < MAX_COUNT) {
+        StraightMove();
+        _delay_ms(10);
+        UpBaseSpeed();
+        moveCount++;
+    }
+    StopMove();
+    _delay_ms(500);
+    SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
+    
+	StopMove();
 }
 
 void sensorDebug(void) {
-	while(1) {
-		getSensors();
-		LOG_WARN("sensor %3d: %3d: %3d: %3d: %3d: %3d \r\n",
-		IR[LEFT_OUTSIDE], IR[LEFT_CENTER], IR[LEFT_INSIDE],
-		IR[RIGHT_INSIDE], IR[RIGHT_CENTER], IR[RIGHT_OUTSIDE]);
-		LOG_WARN("IR[L %1d%1d%1d%1d%1d%1d R]\r\n",
-		((IR[LEFT_OUTSIDE]  <= COMPARE_VALUE) ? 1 : 0),
-		((IR[LEFT_CENTER]   <= COMPARE_VALUE) ? 1 : 0),
-		((IR[LEFT_INSIDE]   <= COMPARE_VALUE) ? 1 : 0),
-		((IR[RIGHT_INSIDE]  <= COMPARE_VALUE) ? 1 : 0),
-		((IR[RIGHT_CENTER]  <= COMPARE_VALUE) ? 1 : 0),
-		((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE) ? 1 : 0));
-		LOG_WARN("currentTraceAction %d\r\n", currentTraceAction);
-		_delay_ms(500);
-	}
+    while(1) {
+        getSensors();
+        LOG_WARN("sensor %3d: %3d: %3d: %3d: %3d: %3d \r\n",
+        IR[LEFT_OUTSIDE], IR[LEFT_CENTER], IR[LEFT_INSIDE],
+        IR[RIGHT_INSIDE], IR[RIGHT_CENTER], IR[RIGHT_OUTSIDE]);
+        LOG_WARN("IR[L %1d%1d%1d%1d%1d%1d R]\r\n",
+        ((IR[LEFT_OUTSIDE]  <= COMPARE_VALUE) ? 1 : 0),
+        ((IR[LEFT_CENTER]   <= COMPARE_VALUE) ? 1 : 0),
+        ((IR[LEFT_INSIDE]   <= COMPARE_VALUE) ? 1 : 0),
+        ((IR[RIGHT_INSIDE]  <= COMPARE_VALUE) ? 1 : 0),
+        ((IR[RIGHT_CENTER]  <= COMPARE_VALUE) ? 1 : 0),
+        ((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE) ? 1 : 0));
+        LOG_WARN("currentTraceAction %d\r\n", currentTraceAction);
+        _delay_ms(500);
+    }
 }
 
 /*
@@ -124,12 +175,17 @@ void sensorDebug(void) {
 
     int left = 0, center = 0, right = 0;
     int isFirst = 0;
-    while (center <= 180) {
-	    GetAXS1SensorFireData(&left, &center, &right);
-        // 宝物検索用ライントレースを実行
-        TreasureFindingLineTrace(isFirst);
-	    isFirst++;
+    static int moveCounter = 0;
+
+    while (left <= 250) {
+        // 宝物検索用に左右交互に旋回を実行
+        TreasureFindingZigZagMove(&moveCounter);
+
+        //moveCounter++;
+        GetAXS1SensorFireData(&left, &center, &right);
+        _delay_ms(1);
     }
+
     // 停止する
     StopMove();
     _delay_ms(500);
@@ -283,6 +339,51 @@ void executeFinalAction(void)
 	MotorControl(LEFT_MOTOR, 40);
 	_delay_ms(500);
 	StopMove();//停止を実行
+}
+
+/*
+ * ロボットを左右交互に旋回して少し前進する。
+ * ラインセンサーの値は使用せず、決められた間隔で方向を変える。
+ */
+void TreasureFindingZigZagMove(int *counter) {
+    const int moveWidthCount = 300;//旋回の幅を指定
+
+    if (m_MoveCounter == 300) {
+        if (m_MoveDirerctionFlag == 0) {
+            m_MoveDirerctionFlag = 1;
+        } else if(m_MoveDirerctionFlag == 1) {
+            m_MoveDirerctionFlag = 2;
+        } else if(m_MoveDirerctionFlag == 2) {
+            m_MoveDirerctionFlag = 3;
+        } else if(m_MoveDirerctionFlag == 3) {
+            m_MoveDirerctionFlag = 0;
+            //        if (m_MoveCounter >= (moveWidthCount * 2)) {
+            // counterがmoveWidthCountの２倍になったら
+            // 少しだけ前進してリセット
+            BaseSpeed = 30;//要調整
+            StraightMove();
+            _delay_ms(150);//要調整
+            m_MoveCounter = 0;
+            //        }
+        }
+        m_MoveCounter=0;
+    }
+
+	// counterを判定
+	if (m_MoveDirerctionFlag == 0) {
+    	// counterがmoveWidthCount以内なら左旋回
+    	LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+    	_delay_ms(1);
+    } else if (m_MoveDirerctionFlag == 1 || m_MoveDirerctionFlag == 2) {
+    	// counterがmoveWidthCount以内なら左旋回
+    	RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+    	_delay_ms(1);
+    } else {
+    	// counterがmoveWidthCountより大きい場合右旋回
+    	LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+    	_delay_ms(1);
+	}
+	m_MoveCounter++;
 }
 
 /************************************************************************/
