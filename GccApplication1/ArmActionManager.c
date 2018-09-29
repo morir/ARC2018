@@ -34,7 +34,7 @@ void FindFormation(void)
 	executeRotate(H_MOV_SHOULDER_MOTOR, 60, 512, 0);
 	executeRotate(V_MOV_SHOULDER_MOTOR, 60, 590, 590);
 	executeRotate(ELBOW_MOTOR, 60, 90, 90);
-	executeRotate(WRIST_MOTOR, 60, 380, 380);
+	executeRotate(WRIST_MOTOR, 60, 420, 420);
 	executeRotate(HAND_MOTOR, 60, 800, 800);
 }
 

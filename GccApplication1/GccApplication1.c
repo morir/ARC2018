@@ -82,69 +82,109 @@ int main(void) {
 void execute2018PreExamination(void) {
     LOG_DEBUG("Call execute2018PreExamination() %s\r\n", "");
 
-    int moveCount = 0;
+    //int moveCount = 0;
     int MAX_COUNT = 500;
-    _delay_ms(500);
+    _delay_ms(200);
 
     FindFormation();//アームを検索形態
 
+    // 停止する
 	StopMove();
-    _delay_ms(500);
+    _delay_ms(300);
     
     // 直進する
-    while (moveCount < MAX_COUNT) {
-        StraightMove();
-        _delay_ms(10);
-        UpBaseSpeed();
-        moveCount++;
-    }
-	StopMove();
-	_delay_ms(500);
-    SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
+    StraightMove();
+    _delay_ms(3000);
 
+    // 停止する
+	StopMove();
+	_delay_ms(300);
 
     // 左旋回
     LeftTurnMove();
-    _delay_ms(1000);
-
-	StopMove();
-	_delay_ms(500);
-    SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
-
-    // 直進する
-    while (moveCount < MAX_COUNT) {
-        StraightMove();
-        _delay_ms(10);
-        UpBaseSpeed();
-        moveCount++;
-    }
+    _delay_ms(3000);
+    
+    // 停止する
     StopMove();
     _delay_ms(500);
-    SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
+
+    // 直進する
+    StraightMove();
+    _delay_ms(3000);
+
+    // 停止する
+    StopMove();
+    _delay_ms(500);
 
     // 右旋回
     RightTurnMove();
-    _delay_ms(1000);
+    _delay_ms(3000);
 
+    // 停止する
     StopMove();
     _delay_ms(500);
-    SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
 
-    // 直進する
-    while (moveCount < MAX_COUNT) {
-        StraightMove();
-        _delay_ms(10);
-        UpBaseSpeed();
-        moveCount++;
-    }
-    StopMove();
-    _delay_ms(500);
-    SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
-    
+    //while (moveCount < MAX_COUNT) {
+        //StraightMove();
+        //_delay_ms(5);
+        //UpBaseSpeed();
+        //moveCount++;
+    //}
+
+	//treasureHunt_01();
+
+	BackLowMove();//下がる
+	_delay_ms(500);
+
+	StopMove();
+	_delay_ms(500);
+
+    //SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
+//
+//
+    //// 左旋回
+    //LeftTurnMove();
+    //_delay_ms(2000);
+//
+	//StopMove();
+	//_delay_ms(500);
+    //SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
+//
+    //// 直進する
+    //while (moveCount < MAX_COUNT) {
+        //StraightMove();
+        //_delay_ms(10);
+        //UpBaseSpeed();
+        //moveCount++;
+    //}
+    //StopMove();
+    //_delay_ms(500);
+    //SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
+
+    //// 右旋回
+    //RightTurnMove();
+    //_delay_ms(2000);
+//
+    //StopMove();
+    //_delay_ms(500);
+    //SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
+//
+    //// 直進する
+    //while (moveCount < MAX_COUNT) {
+        //StraightMove();
+        //_delay_ms(10);
+        //UpBaseSpeed();
+        //moveCount++;
+    //}
+    //StopMove();
+    //_delay_ms(500);
+    //SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
+    //
 	StopMove();
 }
 
 void sensorDebug(void) {
+    int left = 0, center = 0, right = 0;
     while(1) {
         getSensors();
         LOG_WARN("sensor %3d: %3d: %3d: %3d: %3d: %3d \r\n",
@@ -157,8 +197,13 @@ void sensorDebug(void) {
         ((IR[RIGHT_INSIDE]  <= COMPARE_VALUE) ? 1 : 0),
         ((IR[RIGHT_CENTER]  <= COMPARE_VALUE) ? 1 : 0),
         ((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE) ? 1 : 0));
-        LOG_WARN("currentTraceAction %d\r\n", currentTraceAction);
+        LOG_WARN("currentTraceAction %d\r\n\n", currentTraceAction);
+
+		GetAXS1SensorFireData(&left, &center, &right);
+		LOG_WARN("GetAXS1SensorFireData() [%4d, %4d, %4d]\n\n", left, center, right);
+
         _delay_ms(500);
+
     }
 }
 
@@ -174,12 +219,12 @@ void sensorDebug(void) {
     LOG_INFO("treasureHunt_01() %s\r\n", "1");
 
     int left = 0, center = 0, right = 0;
-    int isFirst = 0;
-    static int moveCounter = 0;
+    //int isFirst = 0;
+    //static int moveCounter = 0;
 
-    while (left <= 250) {
+    while (right <= 250) {
         // 宝物検索用に左右交互に旋回を実行
-        TreasureFindingZigZagMove(&moveCounter);
+        //TreasureFindingZigZagMove(&moveCounter);
 
         //moveCounter++;
         GetAXS1SensorFireData(&left, &center, &right);
@@ -190,23 +235,26 @@ void sensorDebug(void) {
     StopMove();
     _delay_ms(500);
 
-    // 手を開く
-    ArmOpenFormation();
+	executeRotate(HAND_MOTOR, 60, 560, 560);//つかむ
 
-    // 前進or後進する（実動作に合わせて設定）。
-    StraightLowMove2();
-	/* 長すぎると、ペットボトルを倒すかも */
-	_delay_ms(350);
-	
-    // 停止する
-    StopMove();
+	executeRotate(WRIST_MOTOR, 60, 250, 250);//持ち上げる
+
+    StraightMove();
     _delay_ms(1000);
 
+    // 停止する
+    StopMove();
+    _delay_ms(500);
+
+	executeRotate(WRIST_MOTOR, 60, 420, 420);//下す
+
+	executeRotate(HAND_MOTOR, 60, 800, 800);//ひらく
+
     // 宝物を掴んで荷台に乗せる
-    CatchAndReleaseFormation();
+    //CatchAndReleaseFormation();
 
     // ライン上からの旋回を行う
-    executeRightTurnFromOnLine();
+    //executeRightTurnFromOnLine();
 
     // 停止する
     StopMove();
