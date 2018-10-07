@@ -69,13 +69,13 @@ int main(void) {
     initIRSensor();
     MotorInit();
     initSerial();
-	//sensorDebug();//センサー値の確認だけをしたい場合、コメントアウトを解除
+	sensorDebug();//センサー値の確認だけをしたい場合、コメントアウトを解除
 	//Debug_AllMotorCurrentAngle();// 現在のモータ角度を表示(Debug用)
 
 	//initArmMotor();
 
     //2018年事前審査用動作実行
-    execute2018PreExamination();
+    //execute2018PreExamination();
 
 }
 
