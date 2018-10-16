@@ -66,7 +66,10 @@ int main(void) {
 
     initEmergencyStop();
     setLED();
+    timer_init();
     initIRSensor();
+    sei();	// Interrupt Enable
+
     MotorInit();
     initSerial();
 	sensorDebug();//センサー値の確認だけをしたい場合、コメントアウトを解除
@@ -186,23 +189,15 @@ void execute2018PreExamination(void) {
 void sensorDebug(void) {
     int left = 0, center = 0, right = 0;
     while(1) {
-        getSensors();
+        //getSensors();
         LOG_WARN("sensor %3d: %3d: %3d: %3d: %3d: %3d \r\n",
-        IR[LEFT_OUTSIDE], IR[LEFT_CENTER], IR[LEFT_INSIDE],
-        IR[RIGHT_INSIDE], IR[RIGHT_CENTER], IR[RIGHT_OUTSIDE]);
-        LOG_WARN("IR[L %1d%1d%1d%1d%1d%1d R]\r\n",
-        ((IR[LEFT_OUTSIDE]  <= COMPARE_VALUE) ? 1 : 0),
-        ((IR[LEFT_CENTER]   <= COMPARE_VALUE) ? 1 : 0),
-        ((IR[LEFT_INSIDE]   <= COMPARE_VALUE) ? 1 : 0),
-        ((IR[RIGHT_INSIDE]  <= COMPARE_VALUE) ? 1 : 0),
-        ((IR[RIGHT_CENTER]  <= COMPARE_VALUE) ? 1 : 0),
-        ((IR[RIGHT_OUTSIDE] <= COMPARE_VALUE) ? 1 : 0));
-        LOG_WARN("currentTraceAction %d\r\n\n", currentTraceAction);
+        IRArrays[ADC_PORT_1], IRArrays[ADC_PORT_2], IRArrays[ADC_PORT_3],
+        IRArrays[ADC_PORT_4], IRArrays[ADC_PORT_5], IRArrays[ADC_PORT_6]);
 
 		GetAXS1SensorFireData(&left, &center, &right);
 		LOG_WARN("GetAXS1SensorFireData() [%4d, %4d, %4d]\n\n", left, center, right);
 
-        _delay_ms(500);
+        _delay_ms(1000);
 
     }
 }

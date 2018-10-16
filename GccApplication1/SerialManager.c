@@ -15,7 +15,6 @@ char readBuffer[SERIAL_BUFFER_SIZE] = {0};
 void initSerial(void){
 	LOG_INFO( "initSerial\n" );
 	serial_initialize(57600);
-	sei();	// Interrupt Enable
 }
 
 void clearSerialBuffer(){

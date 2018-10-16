@@ -116,8 +116,16 @@
 
 unsigned int values;
 
+int IRArrays[6 + 1];//要素数は (センサ数 + 1)
+
+void timer_init(void);
 void initIRSensor(void);
 unsigned int ReadIRSensor(unsigned int ch);
 void ReadIRSensors(unsigned int * sensors);
+
+int updateIrSensor(int type);
+void getIrSensor(void);
+
+
 
 #endif /* SENSORMANAGER_H_ */
