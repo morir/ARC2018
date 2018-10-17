@@ -66,12 +66,12 @@ int main(void) {
 
     initEmergencyStop();
     setLED();
-    timer_init();
+    //timer_init();
     initIRSensor();
-    sei();	// Interrupt Enable
 
     MotorInit();
     initSerial();
+    //sei();	// Interrupt Enable
 	sensorDebug();//センサー値の確認だけをしたい場合、コメントアウトを解除
 	//Debug_AllMotorCurrentAngle();// 現在のモータ角度を表示(Debug用)
 
@@ -190,6 +190,7 @@ void sensorDebug(void) {
     int left = 0, center = 0, right = 0;
     while(1) {
         //getSensors();
+        getIrSensor();
         LOG_WARN("sensor %3d: %3d: %3d: %3d: %3d: %3d \r\n",
         IRArrays[ADC_PORT_1], IRArrays[ADC_PORT_2], IRArrays[ADC_PORT_3],
         IRArrays[ADC_PORT_4], IRArrays[ADC_PORT_5], IRArrays[ADC_PORT_6]);
@@ -197,7 +198,7 @@ void sensorDebug(void) {
 		GetAXS1SensorFireData(&left, &center, &right);
 		LOG_WARN("GetAXS1SensorFireData() [%4d, %4d, %4d]\n\n", left, center, right);
 
-        _delay_ms(1000);
+        _delay_ms(500);
 
     }
 }
