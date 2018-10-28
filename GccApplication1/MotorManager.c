@@ -9,6 +9,8 @@
 
 #include "AvrTimer.h"
 #include "DebugLog.h"
+#include "TraceManager.h"
+#include "ArmActionManager.h"
 
 #define DBG 1
 //#define _MOTOR_OFF_
@@ -32,16 +34,32 @@ void MotorInit(void) {
 //    dxl_write_word( LEFT_MOTOR, P_CCW_ANGLE_LIMIT_L, 0 );
 //    dxl_write_word( LEFT_MOTOR, P_CCW_ANGLE_LIMIT_H, 0 );
     //Set Torque
+
+
     dxl_write_word( RIGHT_MOTOR, 24, 1 );
     dxl_write_word( LEFT_MOTOR,  24, 1 );
     //Set EEP Lock
     dxl_write_word( RIGHT_MOTOR, P_EEP_LOCK, 1 );
     dxl_write_word( LEFT_MOTOR, P_EEP_LOCK, 1 );
     // Set goal speed
+
+    // Set motor speed
+	dxl_write_word( HAND_MOTOR, P_GOAL_SPEED_L, 1 );//速度1を初期設定
+	dxl_write_word( HAND_MOTOR, P_TORQUE_LIMIT_L, 1023 );//トルク最大値を初期設定
+
+	dxl_write_word( WRIST_MOTOR, P_GOAL_SPEED_L, 1 );//速度1を初期設定
+	dxl_write_word( WRIST_MOTOR, P_TORQUE_LIMIT_L, 1023 );//トルク最大値を初期設定
+
+	dxl_write_word( ELBOW_MOTOR, P_GOAL_SPEED_L, 1 );//速度1を初期設定
+	dxl_write_word( ELBOW_MOTOR, P_TORQUE_LIMIT_L, 1023 );//トルク最大値を初期設定
+
+	dxl_write_word( H_MOV_SHOULDER_MOTOR, P_GOAL_SPEED_L, 1 );//速度1を初期設定
+	dxl_write_word( H_MOV_SHOULDER_MOTOR, P_TORQUE_LIMIT_L, 1023 );//トルク最大値を初期設定
+
     dxl_write_word( BROADCAST_ID, P_GOAL_SPEED_L, 0 );
 	// AX-S1 赤外線を低感度モードに設定
 	
-    _delay_ms(500);//1000
+    _delay_ms(500);
 	
 	BaseSpeed = BASE_SPEED_INIT_VAL;
 }

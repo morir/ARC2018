@@ -106,18 +106,19 @@ void TreasureFindingLineTrace(int isFirst) {
 	// èââÒìÆçÏÇÃèÍçá
 	if (isFirst == 0) {
 		if (sensorPattern == BIT_100000 ||
-		sensorPattern == BIT_010000 ||
-		sensorPattern == BIT_110000 ||
-		sensorPattern == BIT_001000 ||
-		sensorPattern == BIT_101000 ||
-		sensorPattern == BIT_011000 ||
-		sensorPattern == BIT_111000) {
-		isSearchingLeftSide = 1;
-		Execute(TRACE_L_TRESURE_FIND);
-	} else {
-	    isSearchingLeftSide = 0;
-	    Execute(TRACE_R_TRESURE_FIND);
-	}
+		    sensorPattern == BIT_010000 ||
+		    sensorPattern == BIT_110000 ||
+		    sensorPattern == BIT_001000 ||
+		    sensorPattern == BIT_101000 ||
+		    sensorPattern == BIT_011000 ||
+		    sensorPattern == BIT_111000)
+        {
+    	    isSearchingLeftSide = 1;
+    	    Execute(TRACE_L_TRESURE_FIND);
+    	} else {
+    	    isSearchingLeftSide = 0;
+    	    Execute(TRACE_R_TRESURE_FIND);
+		}
 		_delay_ms(10);
 		return;
 	}

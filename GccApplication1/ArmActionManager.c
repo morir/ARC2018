@@ -14,43 +14,69 @@
 
 /************************************************************************/
 // Arm用モータの初期設定
-// Arm用モータを宝物検索用形態(ライントレース用)の位置に設定
+// Arm用モータを宝物検索用形態(床ターゲット回収用)の位置に設定
 /************************************************************************/
-void initArmMotor(void) {
-
-	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 0);
-	executeRotate(V_MOV_SHOULDER_MOTOR, 50, 512, 0);
-	executeRotate(ELBOW_MOTOR, 50, 512, 0);
-	executeRotate(WRIST_MOTOR, 50, 512, 0);
-	executeRotate(HAND_MOTOR, 50, 512, 0);
+void initArmMotor(void) 
+{
+	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
+	executeRotate(ELBOW_MOTOR, 50, 350, 10);
+	executeRotate(WRIST_MOTOR, 50, 320, 10);
+	executeRotate(HAND_MOTOR, 50, 780, 10);
 }
 
 /************************************************************************/
-// ターゲット検索用形態
-// ターゲット検索用の形状に変形する。
+// 床に設置されたターゲット検索用形態
+// 手先を床すれすれに変形する。
 /************************************************************************/
-void FindFormation(void)
+void FindFormationOnFloor(void)
 {
-	executeRotate(H_MOV_SHOULDER_MOTOR, 60, 512, 0);
-	executeRotate(V_MOV_SHOULDER_MOTOR, 60, 590, 590);
-	executeRotate(ELBOW_MOTOR, 60, 90, 90);
-	executeRotate(WRIST_MOTOR, 60, 420, 420);
-	executeRotate(HAND_MOTOR, 60, 800, 800);
+	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
+	executeRotate(ELBOW_MOTOR, 50, 350, 10);
+	executeRotate(WRIST_MOTOR, 50, 320, 10);
+	executeRotate(HAND_MOTOR, 50, 780, 10);
 }
 
+/************************************************************************/
+// 台の上に設置されたターゲット検索用形態
+// 手先を床すれすれに変形する。
+/************************************************************************/
+void FindFormationOnTable(void)
+{
+    executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
+    executeRotate(ELBOW_MOTOR, 50, 460, 10);
+    executeRotate(WRIST_MOTOR, 50, 430, 10);
+    executeRotate(HAND_MOTOR, 50, 780, 10);
+}
 
 /************************************************************************/
-// 宝物回収形態(下げてひらいた状態)
-// 宝物を回収するための準備形態にする
+// ターゲット運搬用形態
+// ターゲットを床から4cm程度持ち上げた状態に変形する。
 /************************************************************************/
-void ArmOpenFormation(void)
+void TransportFormation(void)
 {
-	//-- 下げてひらく
-	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 0);
-	executeRotate(HAND_MOTOR, 200, 770, 770);
-	executeRotate(ELBOW_MOTOR, 150, 360, 360);
-	executeRotate(WRIST_MOTOR, 150, 120, 120);
-	executeRotate(V_MOV_SHOULDER_MOTOR, 150, 500, 500);
+    executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
+    executeRotate(ELBOW_MOTOR, 50, 490, 10);
+    executeRotate(WRIST_MOTOR, 50, 535, 10);
+}
+
+/************************************************************************/
+// 手を閉じる
+// 他の関節は動かさない
+/************************************************************************/
+void GrabWithHand(void)
+{
+	// 手を閉じる
+	executeRotate(HAND_MOTOR, 50, 570, 10);
+}
+
+/************************************************************************/
+// 手を開く
+// 他の関節は動かさない
+/************************************************************************/
+void OpenHand(void)
+{
+    // 手を閉じる
+    executeRotate(HAND_MOTOR, 50, 780, 10);
 }
 
 /************************************************************************/
@@ -65,7 +91,6 @@ void CatchAndReleaseFormation(void)
 
 	//-- 持ち上げ開始	
 	executeRotate(ELBOW_MOTOR, 100, 250, 250);
-	MotorControlJoint(V_MOV_SHOULDER_MOTOR, 100, 500);
 	MotorControlJoint(ELBOW_MOTOR, 100, 680);
 
 	//-- 持ち上げ途中
@@ -74,7 +99,6 @@ void CatchAndReleaseFormation(void)
 	//-- 落とす直前
 	executeRotate(ELBOW_MOTOR, 100, 700, 700);
 	MotorControlJoint( ELBOW_MOTOR, 100, 700 );
-	executeRotate( V_MOV_SHOULDER_MOTOR, 100, 410, 410 );
 	_delay_ms(500);//適切なウェイト時間を設定
 
 	//-- 落とす
@@ -84,14 +108,12 @@ void CatchAndReleaseFormation(void)
 
 	//-- 宝物検索用形態に移行するための準備
 	MotorControlJoint(ELBOW_MOTOR, 100, 280);
-	executeRotate(V_MOV_SHOULDER_MOTOR, 40, 580, 580);
 	MotorControlJoint(WRIST_MOTOR, 200, 512);
 	MotorControlJoint(ELBOW_MOTOR, 100, 400);	
-	MotorControlJoint(V_MOV_SHOULDER_MOTOR, 100, 630);
 	executeRotate(ELBOW_MOTOR, 100, 120, 120);
 	
 	// 宝物検索用ライントレース形態に戻す
-	FindFormation();
+	FindFormationOnFloor();
 }
 
 
@@ -102,7 +124,6 @@ void CatchAndReleaseFormation(void)
 void Debug_AllMotorCurrentAngle(void)
 {
 	LOG_ERROR("GetCurrentAngle(H_MOV_SHOULDER_MOTOR) %d\r\n", GetCurrentAngle(H_MOV_SHOULDER_MOTOR));
-	LOG_ERROR("GetCurrentAngle(V_MOV_SHOULDER_MOTOR) %d\r\n", GetCurrentAngle(V_MOV_SHOULDER_MOTOR));
 	LOG_ERROR("GetCurrentAngle(ELBOW_MOTOR) %d\r\n", GetCurrentAngle(ELBOW_MOTOR));
 	LOG_ERROR("GetCurrentAngle(WRIST_MOTOR) %d\r\n", GetCurrentAngle(WRIST_MOTOR));
 	LOG_ERROR("GetCurrentAngle(HAND_MOTOR) %d\r\n", GetCurrentAngle(HAND_MOTOR));
@@ -110,35 +131,41 @@ void Debug_AllMotorCurrentAngle(void)
 
 /**
  * 設定角度が目標角度(次ステップへ進んで良い角度) になるまで動作する 
- * @param motorId     モータID
- * @param speed       設定速度
- * @param angle       設定角度
- * @param targetangle 目標角度(次ステップへ進んで良い角度) 
+ * @param motorId       モータID
+ * @param speed         設定速度
+ * @param angle         設定角度
+ * @param allowRange    許容角度(次ステップへ進んで良い角度) 
  */
-void executeRotate(int motorId, int speed, int angle, int targetangle){
+void executeRotate(int motorId, int speed, int angle, int allowRange){
 	//設定角度への動作を実行
 	MotorControlJoint( motorId, speed, angle );
 
-	if (angle == 0) {
-        // angleが0の場合はすぐに処理を抜ける。
+	if (allowRange >= 1000) {
+        // allowRangeが1000より大きい場合はすぐに処理を抜ける。
         _delay_ms(10);
         return;
     }
 
-	if((angle - GetCurrentAngle(motorId)) > 0) 
+    int currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
+    
+	if((angle - currentAngle) > 0) 
 	{
+        // 現在角度よりも設定角度が大きい場合
 		// 目標角度に達していない間は動作する
-		while( (targetangle - CorrectionValue) > GetCurrentAngle(motorId))
+		while( (angle - allowRange) >= currentAngle)
 		{
 			_delay_ms(10);//適切なウェイト時間を設定
+            currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
 		}
 	}
 	else
 	{
+        // 現在角度よりも設定角度が小さい場合
 		// 目標角度に達していない間は動作する
-		while( GetCurrentAngle(motorId) > (targetangle + CorrectionValue))
+		while( currentAngle >= (angle + allowRange))
 		{
 			_delay_ms(10);//適切なウェイト時間を設定
+            currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
 		}		
 	}
 }
@@ -154,10 +181,10 @@ void executeRotate(int motorId, int speed, int angle, int targetangle){
  *         300～360°の間：不定値
  *
  *         下記のモータIDを入力パラメータとすること。
- *         SHOULDER_MOTOR       12      // Shoulder Motor address(肩モータ)
- *         UPPER_ARM_MOTOR      25      // Upper arm Motor address(上腕モータ)
- *         FORE_ARM_MOTOR       14      // ForeArm Motor address(前腕モータ)
- *         WRIST_MOTOR          23      // Wrist Motor address(手首モータ)
+ *         H_MOV_SHOULDER_MOTOR 18      // Shoulder Motor address(肩モータ)
+ *         ELBOW_MOTOR          25      // Elbow arm Motor address(肘モータ)
+ *         WRIST_MOTOR          14      // Wrist Motor address(手首モータ)
+ *         HAND_MOTOR           23      // Hand Motor address(手モータ)
  */
 int GetCurrentAngle(int motorId) {
 	int readValueHigh = 0;	// 上位バイト
@@ -181,4 +208,43 @@ int GetCurrentAngle(int motorId) {
 	LOG_DEBUG("GetCurrentAngle(%d) is %d\n", motorId, angle);
 
 	return angle;
+}
+
+/**
+ * 現在のモータ負荷取得
+ * @brief  現在のモータ負荷取得
+ * @param  motorId モータID
+ * @return 現在の負荷
+ * @detail 上位バイト3bit、下位8bitから現在の負荷を取得する。
+ *         出力：0～1023 1023なら100%の負荷状態
+ *          上位バイトの4bit目を取得することで負荷方向を取得できるが本関数では未使用とする。
+ *
+ *         下記のモータIDを入力パラメータとすること。
+ *         H_MOV_SHOULDER_MOTOR 18      // Shoulder Motor address(肩モータ)
+ *         ELBOW_MOTOR          25      // Elbow arm Motor address(肘モータ)
+ *         WRIST_MOTOR          14      // Wrist Motor address(手首モータ)
+ *         HAND_MOTOR           23      // Hand Motor address(手モータ)
+ */
+int GetCurrentLoad(int motorId) {
+	int readValueHigh = 0;	// 上位バイト
+	int readValueLow = 0;	// 下位バイト
+	static int loadVal = 0;	// 現在の負荷
+	
+	// 上位バイト取得
+	readValueHigh = dxl_read_byte(motorId, CTRL_TBL_ADDR_PRESENT_LOAD_H) & 0x02;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return loadVal;
+	}
+	// 下位バイト取得
+	readValueLow  = dxl_read_byte(motorId, CTRL_TBL_ADDR_PRESENT_LOAD_L) & 0xFF;
+	if(dxl_get_result() != COMM_RXSUCCESS) {
+		// パケット通信失敗時、前回値を返す。
+		return loadVal;
+	}
+	// 上位バイトと下位バイトから現在の負荷を計算
+	loadVal = ((readValueHigh << 8) + readValueLow);
+	LOG_DEBUG("GetCurrentAngle(%d) is %d\n", motorId, angle);
+
+	return loadVal;
 }

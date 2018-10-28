@@ -30,6 +30,8 @@
 #define P_GOAL_POSITION_H   31
 #define P_GOAL_SPEED_L      32
 #define P_GOAL_SPEED_H      33
+#define P_TORQUE_LIMIT_L    34
+#define P_TORQUE_LIMIT_H    35
 #define P_EEP_LOCK          47
 
 // MX-12W Control Table Address
