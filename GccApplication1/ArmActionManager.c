@@ -75,7 +75,7 @@ void GrabWithHand(void)
 /************************************************************************/
 void OpenHand(void)
 {
-    // Žè‚ð•Â‚¶‚é
+    // Žè‚ðŠJ‚­
     executeRotate(HAND_MOTOR, 50, 780, 10);
 }
 
