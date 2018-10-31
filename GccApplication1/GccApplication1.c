@@ -511,6 +511,7 @@ void executeFinalAction(void)
  * 
  ************************************************************************/
 void TargetFindingMove(void) {
+    const int maxAdjustStraightMoveCount = 100;//カメラ発見後の前進距離最大値を指定
     const int maxMoveWidthCount = 50;//旋回の幅を指定
     const int maxStraightMoveCount = 30;//旋回の幅を指定
     int left = 0, center = 0, right = 0;
@@ -524,6 +525,25 @@ void TargetFindingMove(void) {
 
     GetAXS1SensorFireData(&left, &center, &right);
     _delay_ms(1);
+
+    // カメラ発見位置は、手から遠いのである程度直進する
+    while (straightMoveCount < maxAdjustStraightMoveCount)
+    {
+        GetAXS1SensorFireData(&left, &center, &right);
+        _delay_ms(1);
+        if (right >= 250)
+        {
+            StopMove();
+            _delay_ms(100);
+            //閾値を超えたら抜ける
+            break;
+        }
+        StraightMove();
+        _delay_ms(5);
+        straightMoveCount++;
+    }
+    straightMoveCount = 0;
+
     while (right <= 250) {
         // ターゲット検索用に左右交互にアームを動かす
         
@@ -635,6 +655,7 @@ void TargetFindingMove(void) {
  ************************************************************************/
 void PutTargetOnTable(void)
 {
+    const int maxAdjustStraightMoveCount = 100;//カメラ発見後の前進距離最大値を指定
     const int maxMoveWidthCount = 50;//旋回の幅を指定
     const int maxStraightMoveCount = 30;//旋回の幅を指定
     int left = 0, center = 0, right = 0;
@@ -646,8 +667,27 @@ void PutTargetOnTable(void)
     StopMove();
     _delay_ms(100);
 
+    // カメラ発見位置は、手から遠いのである程度直進する
+    while (straightMoveCount < maxAdjustStraightMoveCount)
+    {
+        GetAXS1SensorFireData(&left, &center, &right);
+        _delay_ms(1);
+        if (right >= 250)
+        {
+            StopMove();
+            _delay_ms(100);
+            //閾値を超えたら抜ける
+            break;
+        }
+        StraightMove();
+        _delay_ms(5);
+        straightMoveCount++;
+    }
+    straightMoveCount = 0;
+
     GetAXS1SensorFireData(&left, &center, &right);
     _delay_ms(1);
+
     while (center <= 250) {
         // ターゲット検索用に左右交互にアームを動かす
             

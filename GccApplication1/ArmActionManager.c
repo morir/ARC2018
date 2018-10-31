@@ -66,7 +66,7 @@ void TransportFormation(void)
 void GrabWithHand(void)
 {
 	// Žè‚ð•Â‚¶‚é
-	executeRotate(HAND_MOTOR, 50, 570, 10);
+	executeRotate(HAND_MOTOR, 50, 570, 1000);
 }
 
 /************************************************************************/
@@ -76,7 +76,7 @@ void GrabWithHand(void)
 void OpenHand(void)
 {
     // Žè‚ðŠJ‚­
-    executeRotate(HAND_MOTOR, 50, 780, 10);
+    executeRotate(HAND_MOTOR, 50, 780, 1000);
 }
 
 /************************************************************************/
