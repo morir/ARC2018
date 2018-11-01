@@ -31,6 +31,10 @@ void executeMission(void);
 void getInputKey(int *outInputKey);
 void executeFunction(int inpurKey);
 
+void TargetFindingMove(void);
+void PutTargetOnTable(void);
+
+
 void treasureHunt_01(void);
 void treasureHunt_02(void);
 void treasureHunt_03(void);
@@ -80,6 +84,7 @@ int main(void) {
 	//Debug_AllMotorCurrentAngle();// 現在のモータ角度を表示(Debug用)
 
 	initArmMotor();
+    LOG_INFO("initArmMotor END\r\n");
 
     executeMission();
 }
@@ -102,19 +107,26 @@ void sensorDebug(void) {
 }
 
 
-void executeMission(void)
-{
+void executeMission(void) {
     int inputKey = INPUT_KEY_NONE;
     while(1) {
         // リモート操作を受け付けて処理を実行する。
-        getInputKey(&inputKey);
-        executeFunction(inputKey);
-        _delay_ms(500);
+        //getInputKey(&inputKey);
+        //executeFunction(inputKey);
+
+        //TargetFindingMove();
+        //_delay_ms(500);
+        GrabWithHand();
+        //_delay_ms(1000);
+        TransportFormation();
+        PutTargetOnTable();
+        OpenHand();
+        return;
     }
+    LOG_INFO("Mission END\r\n");
 }
 
-void getInputKey(int *outInputKey)
-{
+void getInputKey(int *outInputKey) {
     int inpurKey = INPUT_KEY_NONE;
     switch (inpurKey) {
         case INPUT_KEY_UP:
@@ -214,14 +226,13 @@ void getInputKey(int *outInputKey)
             *outInputKey = INPUT_KEY_ACTION_19;
             break;
         default:
-            LOG_INFO("Unknown inpurKey[%d]\r\n", type);
+            LOG_INFO("Unknown inpurKey[%d]\r\n", inpurKey);
             *outInputKey = INPUT_KEY_NONE;
             break;
     }    
 }
 
-void executeFunction(int inpurKey)
-{
+void executeFunction(int inpurKey) {
     switch (inpurKey) {
         case INPUT_KEY_UP:
             LOG_INFO("INPUT_KEY_UP\r\n");
@@ -320,7 +331,7 @@ void executeFunction(int inpurKey)
             StopMove();
             break;
         default:
-            LOG_INFO("Unknown inpurKey[%d]\r\n", type);
+            LOG_INFO("Unknown inpurKey[%d]\r\n", inpurKey);
             StopMove();
             break;
     }
@@ -422,57 +433,56 @@ void executeFunction(int inpurKey)
     _delay_ms(100);
 }
 
-/*
- * 宝物 3 のトレース動作
- * @return なし
- * @condition
- *   開始条件：
- *   終了条件：
- */
- void treasureHunt_03(void) {
-    LOG_INFO("treasureHunt_03() %s\r\n", "1");
-
-    int left = 0, center = 0, right = 0;
-    int isFirst = 0;
-    while (center <= 180) {
-        GetAXS1SensorFireData(&left, &center, &right);
-        // 宝物検索用ライントレースを実行
-        TreasureFindingLineTrace(isFirst);
-        isFirst++;
-    }
-    // 停止する
-    StopMove();
-    _delay_ms(500);
-
-    // 手を開く
-	
-	// 前進or後進する（実動作に合わせて設定）。
-	StraightLowMove2();
-	/* 長すぎると、ペットボトルを倒すかも */
-	_delay_ms(350);
-    
-    // 停止する
-    StopMove();
-    _delay_ms(1000);
-
-    // 宝物を掴んで荷台に乗せる
-    CatchAndReleaseFormation();
-
-    // ライン上からの旋回を行う
-    executeRightTurnFromOnLine();
-
-    // 停止する
-    StopMove();
-    _delay_ms(100);
-}
+///*
+ //* 宝物 3 のトレース動作
+ //* @return なし
+ //* @condition
+ //*   開始条件：
+ //*   終了条件：
+ //*/
+//void treasureHunt_03(void) {
+    //LOG_INFO("treasureHunt_03() %s\r\n", "1");
+//
+    //int left = 0, center = 0, right = 0;
+    //int isFirst = 0;
+    //while (center <= 180) {
+        //GetAXS1SensorFireData(&left, &center, &right);
+        //// 宝物検索用ライントレースを実行
+        //TreasureFindingLineTrace(isFirst);
+        //isFirst++;
+    //}
+    //// 停止する
+    //StopMove();
+    //_delay_ms(500);
+//
+    //// 手を開く
+	//
+	//// 前進or後進する（実動作に合わせて設定）。
+	//StraightLowMove2();
+	///* 長すぎると、ペットボトルを倒すかも */
+	//_delay_ms(350);
+    //
+    //// 停止する
+    //StopMove();
+    //_delay_ms(1000);
+//
+    //// 宝物を掴んで荷台に乗せる
+    //CatchAndReleaseFormation();
+//
+    //// ライン上からの旋回を行う
+    //executeRightTurnFromOnLine();
+//
+    //// 停止する
+    //StopMove();
+    //_delay_ms(100);
+//}
 
 /**
 * ゴール到達時の処理
 * @brief ゴール到達時の処理
 * @return なし
 */
-void executeFinalAction(void)
-{
+void executeFinalAction(void) {
 	LOG_INFO("executeFinalAction!!\r\n");
 	StopMove();
 	_delay_ms(1000);
@@ -522,10 +532,12 @@ void TargetFindingMove(void) {
 
 	StopMove();
 	_delay_ms(100);
+    LOG_INFO("Mission TargetFindingMove === 1=== \r\n");
 
     GetAXS1SensorFireData(&left, &center, &right);
     _delay_ms(1);
 
+    LOG_INFO("Mission TargetFindingMove === 2=== \r\n");
     // カメラ発見位置は、手から遠いのである程度直進する
     while (straightMoveCount < maxAdjustStraightMoveCount)
     {
@@ -536,13 +548,17 @@ void TargetFindingMove(void) {
             StopMove();
             _delay_ms(100);
             //閾値を超えたら抜ける
+            LOG_INFO("Mission TargetFindingMove === 3=== \r\n");
+            straightMoveCount = 0;
             break;
         }
         StraightMove();
-        _delay_ms(5);
+        _delay_ms(1);
         straightMoveCount++;
     }
+    StopMove();
     straightMoveCount = 0;
+    LOG_INFO("Mission TargetFindingMove === 4=== \r\n");
 
     while (right <= 250) {
         // ターゲット検索用に左右交互にアームを動かす
@@ -555,14 +571,17 @@ void TargetFindingMove(void) {
             if (right >= 250)
             {
                 //閾値を超えたら抜ける
+                LOG_INFO("Mission TargetFindingMove === 5=== \r\n");
                 break;
             }
-            moveVal = moveVal + rihgtMoveCount;
-        	executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 10);
-            _delay_ms(10);
+            moveVal = moveVal - 1;
+        	executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
+            _delay_ms(1);
+        	//LOG_INFO("TargetFindingMove rihgtMoveCount[%d] right[%d] maxMoveWidthCount[%d]\n", rihgtMoveCount, right, maxMoveWidthCount);
 
             rihgtMoveCount++;
         }
+        LOG_INFO("Mission TargetFindingMove === 6=== \r\n");
         rihgtMoveCount = 0;
     	_delay_ms(100);
 
@@ -574,15 +593,17 @@ void TargetFindingMove(void) {
             if (right >= 250)
             {
                 //閾値を超えたら抜ける
+                LOG_INFO("Mission TargetFindingMove === 7=== \r\n");
                 break;
             }
-            moveVal = moveVal - leftMoveCount;
-            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 10);
-            _delay_ms(10);
+            moveVal = moveVal + 1;
+            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
+            _delay_ms(5);
             leftMoveCount++;
         }
         leftMoveCount = 0;
     	_delay_ms(100);
+        LOG_INFO("Mission TargetFindingMove === 8=== \r\n");
 
         // アームを左へ（左端まで）
         while (leftMoveCount < maxMoveWidthCount)
@@ -592,15 +613,17 @@ void TargetFindingMove(void) {
             if (right >= 250)
             {
                 //閾値を超えたら抜ける
+                LOG_INFO("Mission TargetFindingMove === 9=== \r\n");
                 break;
             }
-            moveVal = moveVal - leftMoveCount;
-            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 10);
-            _delay_ms(10);
+            moveVal = moveVal + 1;
+            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
+            _delay_ms(5);
             leftMoveCount++;
         }
         leftMoveCount = 0;
     	_delay_ms(100);
+        LOG_INFO("Mission TargetFindingMove === 10=== \r\n");
 
         // アームを右へ（中央へ）
         while (rihgtMoveCount < maxMoveWidthCount)
@@ -610,16 +633,18 @@ void TargetFindingMove(void) {
             if (right >= 250)
             {
                 //閾値を超えたら抜ける
+                LOG_INFO("Mission TargetFindingMove === 11=== \r\n");
                 break;
             }
-            moveVal = moveVal + rihgtMoveCount;
-            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 10);
-            _delay_ms(10);
+            moveVal = moveVal - 1;
+            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
+            _delay_ms(5);
 
             rihgtMoveCount++;
         }
         rihgtMoveCount = 0;
     	_delay_ms(100);
+        LOG_INFO("Mission TargetFindingMove === 12=== \r\n");
 
         GetAXS1SensorFireData(&left, &center, &right);
         _delay_ms(1);
@@ -631,21 +656,27 @@ void TargetFindingMove(void) {
             {
                 StopMove();
                 _delay_ms(100);
+                LOG_INFO("Mission TargetFindingMove === 13=== \r\n");
                 //閾値を超えたら抜ける
                 break;
             }
             StraightMove();
-            _delay_ms(10);
+            _delay_ms(2);
             straightMoveCount++;
         }
         straightMoveCount = 0;
 	    StopMove();
 	    _delay_ms(100);
+        LOG_INFO("Mission TargetFindingMove === 14=== \r\n");
 
         GetAXS1SensorFireData(&left, &center, &right);
-        _delay_ms(1);
+        _delay_ms(100);
     }
-    
+
+    StraightMove();
+    _delay_ms(200);//位置調整：手とターゲットがぶつかるくらい
+    StopMove();
+
 }
 
 /***********************************************************************
@@ -653,8 +684,7 @@ void TargetFindingMove(void) {
  * ロボットアームを左右に動かす⇒少し前進するを繰り返す。
  * 
  ************************************************************************/
-void PutTargetOnTable(void)
-{
+void PutTargetOnTable(void) {
     const int maxAdjustStraightMoveCount = 100;//カメラ発見後の前進距離最大値を指定
     const int maxMoveWidthCount = 50;//旋回の幅を指定
     const int maxStraightMoveCount = 30;//旋回の幅を指定
@@ -701,9 +731,9 @@ void PutTargetOnTable(void)
                 //閾値を超えたら抜ける
                 break;
             }
-            moveVal = moveVal + rihgtMoveCount;
-            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 10);
-            _delay_ms(10);
+            moveVal = moveVal + 1;
+            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
+            _delay_ms(1);
 
             rihgtMoveCount++;
         }
@@ -720,9 +750,9 @@ void PutTargetOnTable(void)
                 //閾値を超えたら抜ける
                 break;
             }
-            moveVal = moveVal - leftMoveCount;
-            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 10);
-            _delay_ms(10);
+            moveVal = moveVal - 1;
+            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
+            _delay_ms(1);
             leftMoveCount++;
         }
         leftMoveCount = 0;
@@ -738,9 +768,9 @@ void PutTargetOnTable(void)
                 //閾値を超えたら抜ける
                 break;
             }
-            moveVal = moveVal - leftMoveCount;
-            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 10);
-            _delay_ms(10);
+            moveVal = moveVal - 1;
+            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
+            _delay_ms(1);
             leftMoveCount++;
         }
         leftMoveCount = 0;
@@ -756,9 +786,9 @@ void PutTargetOnTable(void)
                 //閾値を超えたら抜ける
                 break;
             }
-            moveVal = moveVal + rihgtMoveCount;
-            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 10);
-            _delay_ms(10);
+            moveVal = moveVal + 1;
+            executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
+            _delay_ms(1);
 
             rihgtMoveCount++;
         }
@@ -799,9 +829,8 @@ void PutTargetOnTable(void)
  * 左右の角度の中央にアームを再セットする。
  *
  */
-void FineTuning(void)
-{
-    
+void FineTuning(void) {
+    return;
 }
 
 /*
@@ -1016,6 +1045,6 @@ void execute2018PreExamination(void) {
     //_delay_ms(500);
     //SetBaseSpeed(BASE_SPEED_INIT_VAL);// ベーススピードを戻す
     //
-    StopMove();
+    //StopMove();
 }
 

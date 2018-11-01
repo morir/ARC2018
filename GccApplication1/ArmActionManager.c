@@ -18,10 +18,11 @@
 /************************************************************************/
 void initArmMotor(void) 
 {
+	executeRotate(HAND_MOTOR, 400, 780, 10);
+	executeRotate(WRIST_MOTOR, 180, 260, 5);
+	executeRotate(ELBOW_MOTOR, 100, 350, 10);
+	executeRotate(WRIST_MOTOR, 80, 320, 5);
 	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
-	executeRotate(ELBOW_MOTOR, 50, 350, 10);
-	executeRotate(WRIST_MOTOR, 50, 320, 10);
-	executeRotate(HAND_MOTOR, 50, 780, 10);
 }
 
 /************************************************************************/
@@ -30,10 +31,10 @@ void initArmMotor(void)
 /************************************************************************/
 void FindFormationOnFloor(void)
 {
-	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
 	executeRotate(ELBOW_MOTOR, 50, 350, 10);
 	executeRotate(WRIST_MOTOR, 50, 320, 10);
-	executeRotate(HAND_MOTOR, 50, 780, 10);
+	executeRotate(HAND_MOTOR, 200, 780, 10);
+	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
 }
 
 /************************************************************************/
@@ -54,9 +55,10 @@ void FindFormationOnTable(void)
 /************************************************************************/
 void TransportFormation(void)
 {
+    executeRotate(WRIST_MOTOR, 120, 300, 10);
+    executeRotate(ELBOW_MOTOR, 100, 535, 100);
+    executeRotate(WRIST_MOTOR, 60, 490, 10);
     executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
-    executeRotate(ELBOW_MOTOR, 50, 490, 10);
-    executeRotate(WRIST_MOTOR, 50, 535, 10);
 }
 
 /************************************************************************/
@@ -66,7 +68,7 @@ void TransportFormation(void)
 void GrabWithHand(void)
 {
 	// 手を閉じる
-	executeRotate(HAND_MOTOR, 50, 570, 1000);
+	executeRotate(HAND_MOTOR, 180, 570, 10);
 }
 
 /************************************************************************/
@@ -148,26 +150,66 @@ void executeRotate(int motorId, int speed, int angle, int allowRange){
 
     int currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
     
-	if((angle - currentAngle) > 0) 
-	{
-        // 現在角度よりも設定角度が大きい場合
-		// 目標角度に達していない間は動作する
-		while( (angle - allowRange) >= currentAngle)
-		{
-			_delay_ms(10);//適切なウェイト時間を設定
-            currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
-		}
-	}
-	else
-	{
+    LOG_INFO("executeRotate 1 Low[%d] currentAngle[%d] High[%d]\n", (angle - allowRange), currentAngle, (angle + allowRange));
+
+	// 目標角度に達していない間は動作する
+    if (currentAngle < angle)
+    {
         // 現在角度よりも設定角度が小さい場合
-		// 目標角度に達していない間は動作する
-		while( currentAngle >= (angle + allowRange))
-		{
-			_delay_ms(10);//適切なウェイト時間を設定
-            currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
-		}		
-	}
+        // 目標角度に達していない間は動作する
+        while(1)
+        {
+            if (currentAngle >= (angle - allowRange))
+            {
+                break;
+            }
+    	    _delay_ms(5);//適切なウェイト時間を設定
+    	    currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
+            LOG_INFO("executeRotate 2 Low[%d] currentAngle[%d] High[%d]\n", (angle - allowRange), currentAngle, (angle + allowRange));
+        }
+    }
+    else
+    {
+        // 現在角度よりも設定角度が大きい場合
+        // 目標角度に達していない間は動作する
+        while(1)
+        {
+            if (currentAngle <= (angle + allowRange))
+            {
+                break;
+            }
+    	    _delay_ms(5);//適切なウェイト時間を設定
+    	    currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
+            LOG_INFO("executeRotate 3 Low[%d] currentAngle[%d] High[%d]\n", (angle - allowRange), currentAngle, (angle + allowRange));
+        }
+    }
+	//// 目標角度に達していない間は動作する
+	//while( (currentAngle >= (angle - allowRange)) && !((angle + allowRange) >= currentAngle))
+	//{
+    	//_delay_ms(5);//適切なウェイト時間を設定
+    	//currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
+        //LOG_INFO("executeRotate 2 Low[%d] currentAngle[%d] High[%d]\n", (angle - allowRange), currentAngle, (angle + allowRange));
+	//}
+	//if((angle - currentAngle) > 0) 
+	//{
+        //// 現在角度よりも設定角度が大きい場合
+		//// 目標角度に達していない間は動作する
+		//while( currentAngle >= (angle - allowRange) && (angle + allowRange) >= currentAngle)
+		//{
+			//_delay_ms(10);//適切なウェイト時間を設定
+            //currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
+		//}
+	//}
+	//else
+	//{
+        //// 現在角度よりも設定角度が小さい場合
+		//// 目標角度に達していない間は動作する
+		//while( (angle - allowRange) >= currentAngle)
+		//{
+			//_delay_ms(10);//適切なウェイト時間を設定
+            //currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
+		//}		
+	//}
 }
 
 /**
@@ -206,6 +248,7 @@ int GetCurrentAngle(int motorId) {
 	// 上位バイトと下位バイトから現在の位置を計算
 	angle = ((readValueHigh << 8) + readValueLow);
 	LOG_DEBUG("GetCurrentAngle(%d) is %d\n", motorId, angle);
+	LOG_INFO("GetCurrentAngle(%d) is %d\n", motorId, angle);
 
 	return angle;
 }
