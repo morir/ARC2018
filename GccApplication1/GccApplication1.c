@@ -28,12 +28,11 @@
 // ------------------ Method Definition ------------------
 void execute2018PreExamination(void);
 void executeMission(void);
-void getInputKey(int *outInputKey);
 void executeFunction(int inpurKey);
 
 void TargetFindingMove(void);
 void PutTargetOnTable(void);
-
+void FineTuningForArmPosition(void);
 
 void treasureHunt_01(void);
 void treasureHunt_02(void);
@@ -89,6 +88,12 @@ int main(void) {
     executeMission();
 }
 
+/**
+ * センサー値の確認用 一定間隔でセンサー値を取得し続ける。
+ * @return なし
+ * @condition
+ *   終了条件：終了しない。
+*/
 void sensorDebug(void) {
     int left = 0, center = 0, right = 0;
     while(1) {
@@ -105,7 +110,6 @@ void sensorDebug(void) {
 
     }
 }
-
 
 void executeMission(void) {
     int inputKey = INPUT_KEY_NONE;
@@ -126,394 +130,6 @@ void executeMission(void) {
     LOG_INFO("Mission END\r\n");
 }
 
-void getInputKey(int *outInputKey) {
-    int inpurKey = INPUT_KEY_NONE;
-    switch (inpurKey) {
-        case INPUT_KEY_UP:
-            LOG_INFO("INPUT_KEY_UP\r\n");
-            *outInputKey = INPUT_KEY_UP;
-            break;
-        case INPUT_KEY_DOWN:
-            LOG_INFO("INPUT_KEY_DOWN\r\n");
-            *outInputKey = INPUT_KEY_DOWN;
-            break;
-        case INPUT_KEY_LEFT:
-            LOG_INFO("INPUT_KEY_LEFT\r\n");
-            *outInputKey = INPUT_KEY_LEFT;
-            break;
-        case INPUT_KEY_RIGHT:
-            LOG_INFO("INPUT_KEY_RIGHT\r\n");
-            *outInputKey = INPUT_KEY_RIGHT;
-            break;
-        case INPUT_KEY_NONE:
-            LOG_INFO("INPUT_KEY_NONE\r\n");
-            *outInputKey = INPUT_KEY_NONE;
-            break;
-        case INPUT_KEY_ACTION_01:
-            LOG_INFO("INPUT_KEY_ACTION_01\r\n");
-            *outInputKey = INPUT_KEY_ACTION_01;
-            break;
-        case INPUT_KEY_ACTION_02:
-            LOG_INFO("INPUT_KEY_ACTION_02\r\n");
-            *outInputKey = INPUT_KEY_ACTION_02;
-            break;
-        case INPUT_KEY_ACTION_03:
-            LOG_INFO("INPUT_KEY_ACTION_03\r\n");
-            *outInputKey = INPUT_KEY_ACTION_03;
-            break;
-        case INPUT_KEY_ACTION_04:
-            LOG_INFO("INPUT_KEY_ACTION_04\r\n");
-            *outInputKey = INPUT_KEY_ACTION_04;
-            break;
-        case INPUT_KEY_ACTION_05:
-            LOG_INFO("INPUT_KEY_ACTION_05\r\n");
-            *outInputKey = INPUT_KEY_ACTION_05;
-            break;
-        case INPUT_KEY_ACTION_06:
-            LOG_INFO("INPUT_KEY_ACTION_06\r\n");
-            *outInputKey = INPUT_KEY_ACTION_06;
-            break;
-        case INPUT_KEY_ACTION_07:
-            LOG_INFO("INPUT_KEY_ACTION_07\r\n");
-            *outInputKey = INPUT_KEY_ACTION_07;
-            break;
-        case INPUT_KEY_ACTION_08:
-            LOG_INFO("INPUT_KEY_ACTION_08\r\n");
-            *outInputKey = INPUT_KEY_ACTION_08;
-            break;
-        case INPUT_KEY_ACTION_09:
-            LOG_INFO("INPUT_KEY_ACTION_09\r\n");
-            *outInputKey = INPUT_KEY_ACTION_09;
-            break;
-        case INPUT_KEY_ACTION_10:
-            LOG_INFO("INPUT_KEY_ACTION_10\r\n");
-            *outInputKey = INPUT_KEY_ACTION_10;
-            break;
-        case INPUT_KEY_ACTION_11:
-            LOG_INFO("INPUT_KEY_ACTION_11\r\n");
-            *outInputKey = INPUT_KEY_ACTION_11;
-            break;
-        case INPUT_KEY_ACTION_12:
-            LOG_INFO("INPUT_KEY_ACTION_12\r\n");
-            *outInputKey = INPUT_KEY_ACTION_12;
-            break;
-        case INPUT_KEY_ACTION_13:
-            LOG_INFO("INPUT_KEY_ACTION_13\r\n");
-            *outInputKey = INPUT_KEY_ACTION_13;
-            break;
-        case INPUT_KEY_ACTION_14:
-            LOG_INFO("INPUT_KEY_ACTION_14\r\n");
-            *outInputKey = INPUT_KEY_ACTION_14;
-            break;
-        case INPUT_KEY_ACTION_15:
-            LOG_INFO("INPUT_KEY_ACTION_15\r\n");
-            *outInputKey = INPUT_KEY_ACTION_15;
-            break;
-        case INPUT_KEY_ACTION_16:
-            LOG_INFO("INPUT_KEY_ACTION_16\r\n");
-            *outInputKey = INPUT_KEY_ACTION_16;
-            break;
-        case INPUT_KEY_ACTION_17:
-            LOG_INFO("INPUT_KEY_ACTION_17\r\n");
-            *outInputKey = INPUT_KEY_ACTION_17;
-            break;
-        case INPUT_KEY_ACTION_18:
-            LOG_INFO("INPUT_KEY_ACTION_18\r\n");
-            *outInputKey = INPUT_KEY_ACTION_18;
-            break;
-        case INPUT_KEY_ACTION_19:
-            LOG_INFO("INPUT_KEY_ACTION_19\r\n");
-            *outInputKey = INPUT_KEY_ACTION_19;
-            break;
-        default:
-            LOG_INFO("Unknown inpurKey[%d]\r\n", inpurKey);
-            *outInputKey = INPUT_KEY_NONE;
-            break;
-    }    
-}
-
-void executeFunction(int inpurKey) {
-    switch (inpurKey) {
-        case INPUT_KEY_UP:
-            LOG_INFO("INPUT_KEY_UP\r\n");
-            StraightMove();
-            break;
-        case INPUT_KEY_DOWN:
-            LOG_INFO("INPUT_KEY_DOWN\r\n");
-            BackLowMove();
-            break;
-        case INPUT_KEY_LEFT:
-            LOG_INFO("INPUT_KEY_LEFT\r\n");
-            LeftTurnMove();
-            break;
-        case INPUT_KEY_RIGHT:
-            LOG_INFO("INPUT_KEY_RIGHT\r\n");
-            RightTurnMove();
-            break;
-        case INPUT_KEY_NONE:
-            LOG_INFO("INPUT_KEY_NONE\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_01:
-            LOG_INFO("INPUT_KEY_ACTION_01\r\n");
-            TargetFindingMove();
-            break;
-        case INPUT_KEY_ACTION_02:
-            LOG_INFO("INPUT_KEY_ACTION_02\r\n");
-            GrabWithHand();
-            break;
-        case INPUT_KEY_ACTION_03:
-            LOG_INFO("INPUT_KEY_ACTION_03\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_04:
-            LOG_INFO("INPUT_KEY_ACTION_04\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_05:
-            LOG_INFO("INPUT_KEY_ACTION_05\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_06:
-            LOG_INFO("INPUT_KEY_ACTION_06\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_07:
-            LOG_INFO("INPUT_KEY_ACTION_07\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_08:
-            LOG_INFO("INPUT_KEY_ACTION_08\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_09:
-            LOG_INFO("INPUT_KEY_ACTION_09\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_10:
-            LOG_INFO("INPUT_KEY_ACTION_10\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_11:
-            LOG_INFO("INPUT_KEY_ACTION_11\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_12:
-            LOG_INFO("INPUT_KEY_ACTION_12\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_13:
-            LOG_INFO("INPUT_KEY_ACTION_13\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_14:
-            LOG_INFO("INPUT_KEY_ACTION_14\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_15:
-            LOG_INFO("INPUT_KEY_ACTION_15\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_16:
-            LOG_INFO("INPUT_KEY_ACTION_16\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_17:
-            LOG_INFO("INPUT_KEY_ACTION_17\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_18:
-            LOG_INFO("INPUT_KEY_ACTION_18\r\n");
-            StopMove();
-            break;
-        case INPUT_KEY_ACTION_19:
-            LOG_INFO("INPUT_KEY_ACTION_19\r\n");
-            StopMove();
-            break;
-        default:
-            LOG_INFO("Unknown inpurKey[%d]\r\n", inpurKey);
-            StopMove();
-            break;
-    }
-}
-
-/*
- * 宝物 1 のトレース動作
- * @return なし
- * @condition
- *   開始条件：なし（往路エリア 5 のトレース動作から継続）。
- *   終了条件：宝物（白）を回収、180度旋回が完了する。
- */
- void treasureHunt_01(void) {
-    //int sensorPattern = BIT_000000;
-    LOG_INFO("treasureHunt_01() %s\r\n", "1");
-
-    int left = 0, center = 0, right = 0;
-    //int isFirst = 0;
-    //static int moveCounter = 0;
-
-    while (right <= 250) {
-        // 宝物検索用に左右交互に旋回を実行
-        //TreasureFindingZigZagMove(&moveCounter);
-
-        //moveCounter++;
-        GetAXS1SensorFireData(&left, &center, &right);
-        _delay_ms(1);
-    }
-
-    // 停止する
-    StopMove();
-    _delay_ms(500);
-
-	executeRotate(HAND_MOTOR, 60, 560, 560);//つかむ
-
-	executeRotate(WRIST_MOTOR, 60, 250, 250);//持ち上げる
-
-    StraightMove();
-    _delay_ms(1000);
-
-    // 停止する
-    StopMove();
-    _delay_ms(500);
-
-	executeRotate(WRIST_MOTOR, 60, 420, 420);//下す
-
-	executeRotate(HAND_MOTOR, 60, 800, 800);//ひらく
-
-    // 宝物を掴んで荷台に乗せる
-    //CatchAndReleaseFormation();
-
-    // ライン上からの旋回を行う
-    //executeRightTurnFromOnLine();
-
-    // 停止する
-    StopMove();
-    _delay_ms(100);
-}
-
-/*
- * 宝物 2 のトレース動作
- * @return なし
- * @condition
- *   開始条件：
- *   終了条件：宝物を発見して回収処理実行
- */
- void treasureHunt_02(void) {
-    LOG_INFO("treasureHunt_02() %s\r\n", "1");
-
-    //int left = 0, center = 0, right = 0;
-    //GetAXS1SensorFireData(&left, &center, &right);
-    //while (center <= 130) {
-        //// 宝物検索用ライントレースを実行(旋回)
-        //LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-		//_delay_ms(1);
-        //GetAXS1SensorFireData(&left, &center, &right);
-    //}
-
-    // 停止する
-    StopMove();
-    _delay_ms(500);
- 
-    // 手を開く
-     	
-    // 前進or後進する（実動作に合わせて設定）。
-    StraightLowMove2();
-    /* 長すぎると、ペットボトルを倒すかも */
-    _delay_ms(350);
-
-    // 停止する
-    StopMove();
-    _delay_ms(1000);
-
-    // 宝物を掴んで荷台に乗せる
-    CatchAndReleaseFormation();
-
-    // 停止する
-    StopMove();
-    _delay_ms(100);
-}
-
-///*
- //* 宝物 3 のトレース動作
- //* @return なし
- //* @condition
- //*   開始条件：
- //*   終了条件：
- //*/
-//void treasureHunt_03(void) {
-    //LOG_INFO("treasureHunt_03() %s\r\n", "1");
-//
-    //int left = 0, center = 0, right = 0;
-    //int isFirst = 0;
-    //while (center <= 180) {
-        //GetAXS1SensorFireData(&left, &center, &right);
-        //// 宝物検索用ライントレースを実行
-        //TreasureFindingLineTrace(isFirst);
-        //isFirst++;
-    //}
-    //// 停止する
-    //StopMove();
-    //_delay_ms(500);
-//
-    //// 手を開く
-	//
-	//// 前進or後進する（実動作に合わせて設定）。
-	//StraightLowMove2();
-	///* 長すぎると、ペットボトルを倒すかも */
-	//_delay_ms(350);
-    //
-    //// 停止する
-    //StopMove();
-    //_delay_ms(1000);
-//
-    //// 宝物を掴んで荷台に乗せる
-    //CatchAndReleaseFormation();
-//
-    //// ライン上からの旋回を行う
-    //executeRightTurnFromOnLine();
-//
-    //// 停止する
-    //StopMove();
-    //_delay_ms(100);
-//}
-
-/**
-* ゴール到達時の処理
-* @brief ゴール到達時の処理
-* @return なし
-*/
-void executeFinalAction(void) {
-	LOG_INFO("executeFinalAction!!\r\n");
-	StopMove();
-	_delay_ms(1000);
-
-	/* ゆっくり後進 */
-	MotorControl(RIGHT_MOTOR, 40);
-	MotorControl(LEFT_MOTOR, 1063);
-	_delay_ms(500);//！要調整
-	StopMove();//停止を実行
-	_delay_ms(10);
-
-	/* 200度くらい右回りで回転 */
-	MotorControl(RIGHT_MOTOR, 75);
-	MotorControl(LEFT_MOTOR, 75);
-	_delay_ms(1200);//！要調整
-	StopMove();
-	_delay_ms(10);
-
-	// 肩を前に出す
-	_delay_ms(1000);//！要調整
-
-	/* 荷台を傾けて宝物を落とす */
-	dumpTreasures();
-	_delay_ms(500);
-	
-	/* ゆっくり前進 */
-	MotorControl(RIGHT_MOTOR, 1063);
-	MotorControl(LEFT_MOTOR, 40);
-	_delay_ms(500);
-	StopMove();//停止を実行
-}
 
 /***********************************************************************
  * 手の中に搭載している距離センサーをつかって、ターゲットを検索する
@@ -598,7 +214,7 @@ void TargetFindingMove(void) {
             }
             moveVal = moveVal + 1;
             executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
-            _delay_ms(5);
+            _delay_ms(1);
             leftMoveCount++;
         }
         leftMoveCount = 0;
@@ -618,7 +234,7 @@ void TargetFindingMove(void) {
             }
             moveVal = moveVal + 1;
             executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
-            _delay_ms(5);
+            _delay_ms(1);
             leftMoveCount++;
         }
         leftMoveCount = 0;
@@ -638,7 +254,7 @@ void TargetFindingMove(void) {
             }
             moveVal = moveVal - 1;
             executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
-            _delay_ms(5);
+            _delay_ms(1);
 
             rihgtMoveCount++;
         }
@@ -673,6 +289,7 @@ void TargetFindingMove(void) {
         _delay_ms(100);
     }
 
+    // 少し前進する
     StraightMove();
     _delay_ms(200);//位置調整：手とターゲットがぶつかるくらい
     StopMove();
@@ -687,7 +304,7 @@ void TargetFindingMove(void) {
 void PutTargetOnTable(void) {
     const int maxAdjustStraightMoveCount = 100;//カメラ発見後の前進距離最大値を指定
     const int maxMoveWidthCount = 50;//旋回の幅を指定
-    const int maxStraightMoveCount = 30;//旋回の幅を指定
+    const int maxStraightMoveCount = 25;//旋回の幅を指定
     int left = 0, center = 0, right = 0;
     int rihgtMoveCount = 0;
     int leftMoveCount = 0;
@@ -710,7 +327,7 @@ void PutTargetOnTable(void) {
             break;
         }
         StraightMove();
-        _delay_ms(5);
+        _delay_ms(1);
         straightMoveCount++;
     }
     straightMoveCount = 0;
@@ -728,10 +345,13 @@ void PutTargetOnTable(void) {
             _delay_ms(1);
             if (center >= 250)
             {
-                //閾値を超えたら抜ける
+                //閾値を超えたら、少し外側に動かして抜ける
+                moveVal = moveVal - 5;
+                executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
+                _delay_ms(1);
                 break;
             }
-            moveVal = moveVal + 1;
+            moveVal = moveVal - 1;
             executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
             _delay_ms(1);
 
@@ -740,7 +360,7 @@ void PutTargetOnTable(void) {
         rihgtMoveCount = 0;
         _delay_ms(100);
 
-        // アームを左へ（中央まで）
+        // アームを左へ（中央まで）：センサー値見なくても良いかも
         while (leftMoveCount < maxMoveWidthCount)
         {
             GetAXS1SensorFireData(&left, &center, &right);
@@ -750,7 +370,7 @@ void PutTargetOnTable(void) {
                 //閾値を超えたら抜ける
                 break;
             }
-            moveVal = moveVal - 1;
+            moveVal = moveVal + 1;
             executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
             _delay_ms(1);
             leftMoveCount++;
@@ -766,9 +386,11 @@ void PutTargetOnTable(void) {
             if (center >= 250)
             {
                 //閾値を超えたら抜ける
+                moveVal = moveVal + 5;
+                executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
                 break;
             }
-            moveVal = moveVal - 1;
+            moveVal = moveVal + 1;
             executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
             _delay_ms(1);
             leftMoveCount++;
@@ -776,7 +398,7 @@ void PutTargetOnTable(void) {
         leftMoveCount = 0;
         _delay_ms(100);
 
-        // アームを右へ（中央へ）
+        // アームを右へ（中央へ）：センサー値見なくても良いかも
         while (rihgtMoveCount < maxMoveWidthCount)
         {
             GetAXS1SensorFireData(&left, &center, &right);
@@ -786,7 +408,7 @@ void PutTargetOnTable(void) {
                 //閾値を超えたら抜ける
                 break;
             }
-            moveVal = moveVal + 1;
+            moveVal = moveVal - 1;
             executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
             _delay_ms(1);
 
@@ -809,7 +431,7 @@ void PutTargetOnTable(void) {
                 break;
             }
             StraightMove();
-            _delay_ms(10);
+            _delay_ms(2);
             straightMoveCount++;
         }
         straightMoveCount = 0;
@@ -819,7 +441,13 @@ void PutTargetOnTable(void) {
         GetAXS1SensorFireData(&left, &center, &right);
         _delay_ms(1);
     }
-    
+
+    // 微調整をする前提で少し前進する
+    // 微調整不要の場合、後進する（要確認）
+    StraightMove();
+    _delay_ms(200);//位置調整：センサー検出位置が台の手前になるので、センサーが台の中央付近に当たるように調整する
+    StopMove();
+
 }
 
 /**
@@ -829,8 +457,162 @@ void PutTargetOnTable(void) {
  * 左右の角度の中央にアームを再セットする。
  *
  */
-void FineTuning(void) {
+void FineTuningForArmPosition(void) {
+    int left = 0, center = 0, right = 0;
+    int rihgtMoveCount = 0;
+    int leftMoveCount = 0;
+    int moveVal = 512;
+
+    // アームを右へ
+    while (1)
+    {
+        GetAXS1SensorFireData(&left, &center, &right);
+        _delay_ms(1);
+        if (right < 200)
+        {
+            //閾値よりも小さくなったら抜ける
+            LOG_INFO("FineTuning === 1=== rihgtMoveCount[%d] sensor[%d] moveVal[%d]\n", rihgtMoveCount, right, moveVal);
+            break;
+        }
+        moveVal = moveVal - 1;
+        executeRotate(H_MOV_SHOULDER_MOTOR, 40, moveVal, 1000);
+        _delay_ms(1);
+        //LOG_INFO("TargetFindingMove rihgtMoveCount[%d] right[%d] maxMoveWidthCount[%d]\n", rihgtMoveCount, right, maxMoveWidthCount);
+
+        rihgtMoveCount++;
+    }
+    LOG_INFO("Mission TargetFindingMove === 6=== \r\n");
+    _delay_ms(100);
+
+    // アームを左へ
+    while (1)
+    {
+        GetAXS1SensorFireData(&left, &center, &right);
+        _delay_ms(1);
+        if (right < 200)
+        {
+            //閾値を超えたら抜ける
+            LOG_INFO("FineTuning === 2=== leftMoveCount[%d] sensor[%d] moveVal[%d]\n", leftMoveCount, right, moveVal);
+            break;
+        }
+        moveVal = moveVal + 1;
+        executeRotate(H_MOV_SHOULDER_MOTOR, 40, moveVal, 1000);
+        _delay_ms(1);
+        leftMoveCount++;
+    }
+    
+    // 左右に動かしてセンサー値が外れた位置の中央に移動する
+    moveVal = 512 + ((leftMoveCount - rihgtMoveCount) / 2);
+    executeRotate(H_MOV_SHOULDER_MOTOR, 40, moveVal, 1000);
+    _delay_ms(100);
+
     return;
+}
+
+
+void executeFunction(int inpurKey) {
+    switch (inpurKey) {
+        case INPUT_KEY_UP:
+        LOG_INFO("INPUT_KEY_UP\r\n");
+        StraightMove();
+        break;
+        case INPUT_KEY_DOWN:
+        LOG_INFO("INPUT_KEY_DOWN\r\n");
+        BackLowMove();
+        break;
+        case INPUT_KEY_LEFT:
+        LOG_INFO("INPUT_KEY_LEFT\r\n");
+        LeftTurnMove();
+        break;
+        case INPUT_KEY_RIGHT:
+        LOG_INFO("INPUT_KEY_RIGHT\r\n");
+        RightTurnMove();
+        break;
+        case INPUT_KEY_NONE:
+        LOG_INFO("INPUT_KEY_NONE\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_01:
+        LOG_INFO("INPUT_KEY_ACTION_01\r\n");
+        TargetFindingMove();
+        break;
+        case INPUT_KEY_ACTION_02:
+        LOG_INFO("INPUT_KEY_ACTION_02\r\n");
+        GrabWithHand();
+        break;
+        case INPUT_KEY_ACTION_03:
+        LOG_INFO("INPUT_KEY_ACTION_03\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_04:
+        LOG_INFO("INPUT_KEY_ACTION_04\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_05:
+        LOG_INFO("INPUT_KEY_ACTION_05\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_06:
+        LOG_INFO("INPUT_KEY_ACTION_06\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_07:
+        LOG_INFO("INPUT_KEY_ACTION_07\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_08:
+        LOG_INFO("INPUT_KEY_ACTION_08\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_09:
+        LOG_INFO("INPUT_KEY_ACTION_09\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_10:
+        LOG_INFO("INPUT_KEY_ACTION_10\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_11:
+        LOG_INFO("INPUT_KEY_ACTION_11\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_12:
+        LOG_INFO("INPUT_KEY_ACTION_12\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_13:
+        LOG_INFO("INPUT_KEY_ACTION_13\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_14:
+        LOG_INFO("INPUT_KEY_ACTION_14\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_15:
+        LOG_INFO("INPUT_KEY_ACTION_15\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_16:
+        LOG_INFO("INPUT_KEY_ACTION_16\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_17:
+        LOG_INFO("INPUT_KEY_ACTION_17\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_18:
+        LOG_INFO("INPUT_KEY_ACTION_18\r\n");
+        StopMove();
+        break;
+        case INPUT_KEY_ACTION_19:
+        LOG_INFO("INPUT_KEY_ACTION_19\r\n");
+        StopMove();
+        break;
+        default:
+        LOG_INFO("Unknown inpurKey[%d]\r\n", inpurKey);
+        StopMove();
+        break;
+    }
 }
 
 /*
@@ -1048,3 +830,180 @@ void execute2018PreExamination(void) {
     //StopMove();
 }
 
+/*
+ * 宝物 1 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：なし（往路エリア 5 のトレース動作から継続）。
+ *   終了条件：宝物（白）を回収、180度旋回が完了する。
+ */
+ void treasureHunt_01(void) {
+    //int sensorPattern = BIT_000000;
+    LOG_INFO("treasureHunt_01() %s\r\n", "1");
+
+    int left = 0, center = 0, right = 0;
+    //int isFirst = 0;
+    //static int moveCounter = 0;
+
+    while (right <= 250) {
+        // 宝物検索用に左右交互に旋回を実行
+        //TreasureFindingZigZagMove(&moveCounter);
+
+        //moveCounter++;
+        GetAXS1SensorFireData(&left, &center, &right);
+        _delay_ms(1);
+    }
+
+    // 停止する
+    StopMove();
+    _delay_ms(500);
+
+	executeRotate(HAND_MOTOR, 60, 560, 560);//つかむ
+
+	executeRotate(WRIST_MOTOR, 60, 250, 250);//持ち上げる
+
+    StraightMove();
+    _delay_ms(1000);
+
+    // 停止する
+    StopMove();
+    _delay_ms(500);
+
+	executeRotate(WRIST_MOTOR, 60, 420, 420);//下す
+
+	executeRotate(HAND_MOTOR, 60, 800, 800);//ひらく
+
+    // 宝物を掴んで荷台に乗せる
+    //CatchAndReleaseFormation();
+
+    // ライン上からの旋回を行う
+    //executeRightTurnFromOnLine();
+
+    // 停止する
+    StopMove();
+    _delay_ms(100);
+}
+
+/*
+ * 宝物 2 のトレース動作
+ * @return なし
+ * @condition
+ *   開始条件：
+ *   終了条件：宝物を発見して回収処理実行
+ */
+ void treasureHunt_02(void) {
+    LOG_INFO("treasureHunt_02() %s\r\n", "1");
+
+    //int left = 0, center = 0, right = 0;
+    //GetAXS1SensorFireData(&left, &center, &right);
+    //while (center <= 130) {
+        //// 宝物検索用ライントレースを実行(旋回)
+        //LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+		//_delay_ms(1);
+        //GetAXS1SensorFireData(&left, &center, &right);
+    //}
+
+    // 停止する
+    StopMove();
+    _delay_ms(500);
+ 
+    // 手を開く
+     	
+    // 前進or後進する（実動作に合わせて設定）。
+    StraightLowMove2();
+    /* 長すぎると、ペットボトルを倒すかも */
+    _delay_ms(350);
+
+    // 停止する
+    StopMove();
+    _delay_ms(1000);
+
+    // 宝物を掴んで荷台に乗せる
+    CatchAndReleaseFormation();
+
+    // 停止する
+    StopMove();
+    _delay_ms(100);
+}
+
+///*
+ //* 宝物 3 のトレース動作
+ //* @return なし
+ //* @condition
+ //*   開始条件：
+ //*   終了条件：
+ //*/
+//void treasureHunt_03(void) {
+    //LOG_INFO("treasureHunt_03() %s\r\n", "1");
+//
+    //int left = 0, center = 0, right = 0;
+    //int isFirst = 0;
+    //while (center <= 180) {
+        //GetAXS1SensorFireData(&left, &center, &right);
+        //// 宝物検索用ライントレースを実行
+        //TreasureFindingLineTrace(isFirst);
+        //isFirst++;
+    //}
+    //// 停止する
+    //StopMove();
+    //_delay_ms(500);
+//
+    //// 手を開く
+	//
+	//// 前進or後進する（実動作に合わせて設定）。
+	//StraightLowMove2();
+	///* 長すぎると、ペットボトルを倒すかも */
+	//_delay_ms(350);
+    //
+    //// 停止する
+    //StopMove();
+    //_delay_ms(1000);
+//
+    //// 宝物を掴んで荷台に乗せる
+    //CatchAndReleaseFormation();
+//
+    //// ライン上からの旋回を行う
+    //executeRightTurnFromOnLine();
+//
+    //// 停止する
+    //StopMove();
+    //_delay_ms(100);
+//}
+
+/**
+* ゴール到達時の処理
+* @brief ゴール到達時の処理
+* @return なし
+*/
+void executeFinalAction(void) {
+	LOG_INFO("executeFinalAction!!\r\n");
+	StopMove();
+	_delay_ms(1000);
+
+	/* ゆっくり後進 */
+	MotorControl(RIGHT_MOTOR, 40);
+	MotorControl(LEFT_MOTOR, 1063);
+	_delay_ms(500);//！要調整
+	StopMove();//停止を実行
+	_delay_ms(10);
+
+	/* 200度くらい右回りで回転 */
+	MotorControl(RIGHT_MOTOR, 75);
+	MotorControl(LEFT_MOTOR, 75);
+	_delay_ms(1200);//！要調整
+	StopMove();
+	_delay_ms(10);
+
+	// 肩を前に出す
+	_delay_ms(1000);//！要調整
+
+	/* 荷台を傾けて宝物を落とす */
+	dumpTreasures();
+	_delay_ms(500);
+	
+	/* ゆっくり前進 */
+	MotorControl(RIGHT_MOTOR, 1063);
+	MotorControl(LEFT_MOTOR, 40);
+	_delay_ms(500);
+	StopMove();//停止を実行
+}

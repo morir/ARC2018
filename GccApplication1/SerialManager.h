@@ -15,6 +15,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "include/serial.h"
+#include "TraceManager.h"
 
 #define SERIAL_BUFFER_SIZE 32
 
@@ -22,5 +23,10 @@ extern void initSerial(void);
 extern void clearSerialBuffer();
 extern int checkSerialRead(void);
 extern char * getReadBuffer();
+
+// ------------------ Method Definition ------------------
+void getInputKey(int *outInputKey);
+
+
 
 #endif /* INCFILE1_H_ */

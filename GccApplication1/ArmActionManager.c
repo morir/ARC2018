@@ -18,11 +18,11 @@
 /************************************************************************/
 void initArmMotor(void) 
 {
-	executeRotate(HAND_MOTOR, 400, 780, 10);
 	executeRotate(WRIST_MOTOR, 180, 260, 5);
 	executeRotate(ELBOW_MOTOR, 100, 350, 10);
 	executeRotate(WRIST_MOTOR, 80, 320, 5);
-	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
+	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 1000);
+	executeRotate(HAND_MOTOR, 400, 780, 1000);
 }
 
 /************************************************************************/
@@ -31,10 +31,11 @@ void initArmMotor(void)
 /************************************************************************/
 void FindFormationOnFloor(void)
 {
-	executeRotate(ELBOW_MOTOR, 50, 350, 10);
-	executeRotate(WRIST_MOTOR, 50, 320, 10);
-	executeRotate(HAND_MOTOR, 200, 780, 10);
-	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
+	executeRotate(WRIST_MOTOR, 180, 260, 5);
+	executeRotate(ELBOW_MOTOR, 100, 350, 10);
+	executeRotate(WRIST_MOTOR, 80, 320, 5);
+	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 1000);
+	executeRotate(HAND_MOTOR, 400, 780, 1000);
 }
 
 /************************************************************************/
@@ -43,10 +44,11 @@ void FindFormationOnFloor(void)
 /************************************************************************/
 void FindFormationOnTable(void)
 {
-    executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
+	executeRotate(WRIST_MOTOR, 180, 260, 5);
     executeRotate(ELBOW_MOTOR, 50, 460, 10);
     executeRotate(WRIST_MOTOR, 50, 430, 10);
-    executeRotate(HAND_MOTOR, 50, 780, 10);
+	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 1000);
+	executeRotate(HAND_MOTOR, 400, 780, 1000);
 }
 
 /************************************************************************/
@@ -57,7 +59,7 @@ void TransportFormation(void)
 {
     executeRotate(WRIST_MOTOR, 120, 300, 10);
     executeRotate(ELBOW_MOTOR, 100, 535, 100);
-    executeRotate(WRIST_MOTOR, 60, 490, 10);
+    executeRotate(WRIST_MOTOR, 60, 490, 20);
     executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
 }
 
@@ -68,7 +70,8 @@ void TransportFormation(void)
 void GrabWithHand(void)
 {
 	// 手を閉じる
-	executeRotate(HAND_MOTOR, 180, 570, 10);
+	executeRotate(HAND_MOTOR, 300, 670, 10);
+	executeRotate(HAND_MOTOR, 120, 570, 10);
 }
 
 /************************************************************************/
@@ -78,7 +81,21 @@ void GrabWithHand(void)
 void OpenHand(void)
 {
     // 手を開く
-    executeRotate(HAND_MOTOR, 50, 780, 1000);
+    executeRotate(HAND_MOTOR, 40, 600, 10);
+    executeRotate(HAND_MOTOR, 120, 650, 10);
+    executeRotate(HAND_MOTOR, 250, 780, 1000);
+}
+
+/************************************************************************/
+// レバーを下げる用の形態
+// 手を高く上げる
+/************************************************************************/
+void DownLeverFormation(void)
+{
+    executeRotate(WRIST_MOTOR, 120, 300, 10);
+    executeRotate(ELBOW_MOTOR, 100, 535, 100);
+    executeRotate(WRIST_MOTOR, 60, 490, 20);
+    executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
 }
 
 /************************************************************************/
@@ -161,6 +178,7 @@ void executeRotate(int motorId, int speed, int angle, int allowRange){
         {
             if (currentAngle >= (angle - allowRange))
             {
+                LOG_INFO("executeRotate 2-1 Low[%d] currentAngle[%d] High[%d]\n", (angle - allowRange), currentAngle, (angle + allowRange));
                 break;
             }
     	    _delay_ms(5);//適切なウェイト時間を設定
@@ -176,6 +194,7 @@ void executeRotate(int motorId, int speed, int angle, int allowRange){
         {
             if (currentAngle <= (angle + allowRange))
             {
+                LOG_INFO("executeRotate 3-1 Low[%d] currentAngle[%d] High[%d]\n", (angle - allowRange), currentAngle, (angle + allowRange));
                 break;
             }
     	    _delay_ms(5);//適切なウェイト時間を設定
@@ -183,33 +202,6 @@ void executeRotate(int motorId, int speed, int angle, int allowRange){
             LOG_INFO("executeRotate 3 Low[%d] currentAngle[%d] High[%d]\n", (angle - allowRange), currentAngle, (angle + allowRange));
         }
     }
-	//// 目標角度に達していない間は動作する
-	//while( (currentAngle >= (angle - allowRange)) && !((angle + allowRange) >= currentAngle))
-	//{
-    	//_delay_ms(5);//適切なウェイト時間を設定
-    	//currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
-        //LOG_INFO("executeRotate 2 Low[%d] currentAngle[%d] High[%d]\n", (angle - allowRange), currentAngle, (angle + allowRange));
-	//}
-	//if((angle - currentAngle) > 0) 
-	//{
-        //// 現在角度よりも設定角度が大きい場合
-		//// 目標角度に達していない間は動作する
-		//while( currentAngle >= (angle - allowRange) && (angle + allowRange) >= currentAngle)
-		//{
-			//_delay_ms(10);//適切なウェイト時間を設定
-            //currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
-		//}
-	//}
-	//else
-	//{
-        //// 現在角度よりも設定角度が小さい場合
-		//// 目標角度に達していない間は動作する
-		//while( (angle - allowRange) >= currentAngle)
-		//{
-			//_delay_ms(10);//適切なウェイト時間を設定
-            //currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
-		//}		
-	//}
 }
 
 /**

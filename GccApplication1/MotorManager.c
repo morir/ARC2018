@@ -95,6 +95,25 @@ void MotorControlJoint(int id, int speed, int position) {
 	#endif // _MOTOR_OFF_
 }
 
+/************************************************************************/
+// ブザー音実行関数
+// id モーターID
+// scale 音階
+// length 音長 0.1秒単位
+/************************************************************************/
+void AXS1SoundControl(int id, int scale, int length) {
+    #ifndef _MOTOR_OFF_
+    int CommStatus = COMM_RXSUCCESS;
+    dxl_write_word( id, AXS1_ADDR_BUZZER_DATA_0, scale );
+    dxl_write_word( id, AXS1_ADDR_BUZZER_DATA_1, length );
+    CommStatus = dxl_get_result();
+    if( CommStatus == COMM_RXSUCCESS )
+    PrintErrorCode();
+    else
+    PrintCommStatus(CommStatus);
+    #endif // _MOTOR_OFF_
+}
+
 void Execute(int type) {
 	//type = 0;//DBG
     switch (type) {
@@ -410,6 +429,11 @@ void PrintCommStatus(int CommStatus) {
             LOG_INFO("This is unknown error code!\n");
             break;
     }
+}
+
+void MakeBuzzer(int scale, int length) {
+    AXS1SoundControl(CENTER_AXS1_SENSOR, scale, length);
+
 }
 
 /**

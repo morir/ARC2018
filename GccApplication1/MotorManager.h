@@ -45,6 +45,8 @@
 #define AXS1_ADDR_IR_LIGHT_LEFT_DATA	(29)	// 左側の照度センサ値
 #define AXS1_ADDR_IR_LIGHT_CENTER_DATA	(30)	// 中央の照度センサ値
 #define AXS1_ADDR_IR_LIGHT_RIGHT_DATA	(31)	// 右側の照度センサ値
+#define AXS1_ADDR_BUZZER_DATA_0         (40)    // 音階
+#define AXS1_ADDR_BUZZER_DATA_1         (41)    // 鳴動時間 0.1秒単位
 
 // Trace pattern
 #define TRACE_UNDEFINED			(-1)// 未定義(前回の動作を継続)
@@ -85,6 +87,10 @@
 void MotorInit(void);
 void MotorControl(int id, int power);
 void MotorControlJoint(int id, int speed, int position);
+
+void AXS1SoundControl(int id, int scale, int length);
+
+
 void Execute(int type);
 void StopMove(void);
 void StraightMove(void);
