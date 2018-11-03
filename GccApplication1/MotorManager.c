@@ -215,8 +215,11 @@ void StraightLowMove2(void) {
 
 void BackLowMove(void)
 {
-	int leftSpeed = (1024 + SLOW_BACK_VAL);
-	int rightSpeed = SLOW_BACK_VAL;
+	//int leftSpeed = (1024 + SLOW_BACK_VAL);
+	//int rightSpeed = SLOW_BACK_VAL;
+	int execBaseSpeed = (BaseSpeed < MAX_SPEED) ? BaseSpeed : MAX_SPEED;
+	int leftSpeed = (1024 + execBaseSpeed);
+	int rightSpeed = execBaseSpeed;
 
 	Move(leftSpeed, rightSpeed);
 }

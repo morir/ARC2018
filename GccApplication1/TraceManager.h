@@ -11,10 +11,15 @@
 
 
 // ------------------ Defined ------------------
+#define INPUT_KEY_STOP          90
 #define INPUT_KEY_UP            91
-#define INPUT_KEY_DOWN          92
-#define INPUT_KEY_LEFT          93
-#define INPUT_KEY_RIGHT         94
+#define INPUT_KEY_LEFT          92
+#define INPUT_KEY_RIGHT         93
+#define INPUT_KEY_DOWN          94
+#define INPUT_KEY_MIN_UP        81
+#define INPUT_KEY_MIN_LEFT      82
+#define INPUT_KEY_MIN_RIGHT     83
+#define INPUT_KEY_MIN_DOWN      84
 #define INPUT_KEY_NONE          0
 #define INPUT_KEY_ACTION_01     1
 #define INPUT_KEY_ACTION_02     2

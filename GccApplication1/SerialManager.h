@@ -17,7 +17,10 @@
 #include "include/serial.h"
 #include "TraceManager.h"
 
-#define SERIAL_BUFFER_SIZE 32
+#define SERIAL_BUFFER_SIZE      32
+#define SERIAL_DATA_NOTUPDATE   0
+#define SERIAL_DATA_UPDATED     1
+#define DATA_UPDATED_MAX_COUNT  1000
 
 extern void initSerial(void);
 extern void clearSerialBuffer();

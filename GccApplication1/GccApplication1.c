@@ -28,11 +28,16 @@
 // ------------------ Method Definition ------------------
 void execute2018PreExamination(void);
 void executeMission(void);
-void executeFunction(int inpurKey);
+void executeFunction(void);
+int UpdateSerCmdVal(void);
 
 void TargetFindingMove(void);
 void PutTargetOnTable(void);
 void FineTuningForArmPosition(void);
+
+int Trim(char *s);
+void split( char * s1 );
+void SerialControl(void);
 
 void treasureHunt_01(void);
 void treasureHunt_02(void);
@@ -56,6 +61,7 @@ void LED_off(int i);
 
 // Serial Message Buffer
 int serCmd[SERIAL_BUFFER_SIZE] = {0};
+int serCmdVal = 0;
 
 int isSearchingLeft = 0;
 static long m_MoveCounter = 0;
@@ -78,9 +84,16 @@ int main(void) {
 
     MotorInit();
     initSerial();
-    //sei();	// Interrupt Enable
+    sei();	// Interrupt Enable
 	//sensorDebug();//センサー値の確認だけをしたい場合、コメントアウトを解除
 	//Debug_AllMotorCurrentAngle();// 現在のモータ角度を表示(Debug用)
+    //int isUpdate = 0;
+    //while(1) {
+        //isUpdate = UpdateSerCmdVal();
+        //if (isUpdate > 0) {
+            //SerialControl();
+        //}
+    //}
 
 	initArmMotor();
     LOG_INFO("initArmMotor END\r\n");
@@ -111,25 +124,144 @@ void sensorDebug(void) {
     }
 }
 
+/* -------------------------- */
+/* シリアル指示               */
+/* -------------------------- */
+
+int Trim(char *s) {
+    int i;
+    int count = 0;
+
+    /* 空ポインタか? */
+    if ( s == NULL ) { /* yes */
+        return -1;
+    }
+
+    /* 文字列長を取得する */
+    i = strlen(s);
+
+    /* 末尾から順に空白でない位置を探す */
+    while ( --i >= 0 && s[i] == ' ' ) count++;
+
+    /* 終端ナル文字を付加する */
+    s[i+1] = '\0';
+
+    /* 先頭から順に空白でない位置を探す */
+    i = 0;
+    while ( s[i] != '\0' && s[i] == ' ' ) i++;
+    strcpy(s, &s[i]);
+
+    return i + count;
+}
+
+
+// シリアルデータの分割処理
+void split( char * s1 ) {
+    char s2[] = ",";
+    char *tok;
+    int cnt = 0;
+    tok = strtok( s1, s2 );
+    while( tok != NULL ) {
+        Trim(tok);
+        serCmd[cnt++] = atoi(tok);
+        tok = strtok( NULL, s2 );  /* 2回目以降 */
+    }
+}
+
+// シリアルデータの取得結果によって動作を分ける
+// 動作確認用
+void SerialControl(void) {
+    switch (serCmdVal) {
+        case INPUT_KEY_STOP:
+            StopMove();
+            LOG_INFO("SerialControl StopMove() inpurKey[%d]\r\n", serCmdVal);
+            break;
+        case INPUT_KEY_UP:
+            StraightMove();
+            LOG_INFO("SerialControl StraightMove() inpurKey[%d]\r\n", serCmdVal);
+            break;
+        case INPUT_KEY_DOWN:
+            LeftTurnMove();
+            LOG_INFO("SerialControl BackLowMove() inpurKey[%d]\r\n", serCmdVal);
+            break;
+        case INPUT_KEY_LEFT:
+            RightTurnMove();
+            LOG_INFO("SerialControl LeftTurnMove() inpurKey[%d]\r\n", serCmdVal);
+            break;
+        case INPUT_KEY_RIGHT:
+            BackLowMove();
+            LOG_INFO("SerialControl RightTurnMove() inpurKey[%d]\r\n", serCmdVal);
+            break;
+        default:
+            //MakeBuzzer(serCmd[0], 5);
+            LOG_INFO("SerialControl StopMove()inpurKey[%d]\r\n", serCmdVal);
+            StopMove();
+        break;
+    }
+}
+
 void executeMission(void) {
-    int inputKey = INPUT_KEY_NONE;
+    char * readData = NULL;
+
     while(1) {
+        if( checkSerialRead() > 0 ) {
+            // シリアル受信データあり
+            readData = getReadBuffer(); // データ取得
+            if( readData != NULL ) {
+                split( &readData[0] );  // 取得データの分割
+                //SerialControl();        // シリアルコントロール
+                executeFunction();
+                memset( readData, 0x00, SERIAL_BUFFER_SIZE );
+            }
+        }
+        memset( &serCmd[0], 0x00, sizeof(int) * SERIAL_BUFFER_SIZE );
+
         // リモート操作を受け付けて処理を実行する。
         //getInputKey(&inputKey);
         //executeFunction(inputKey);
 
         //TargetFindingMove();
         //_delay_ms(500);
-        GrabWithHand();
+
+        //GrabWithHand();
         //_delay_ms(1000);
-        TransportFormation();
-        PutTargetOnTable();
-        OpenHand();
-        return;
+
+        //TransportFormation();
+        //PutTargetOnTable();
+        //OpenHand();
+        //return;
     }
-    LOG_INFO("Mission END\r\n");
 }
 
+/***********************************************************************
+ * シリアルデータが入力されているかを確認する
+ * データが入力されている場合、serCmdValを更新して、SERIAL_DATA_UPDATEDを返す。
+ * データが入力されていない場合、serCmdValを初期化して、SERIAL_DATA_NOTUPDATEを返す。
+ * 
+ * SERIAL_DATA_NOTUPDATE 0
+ * SERIAL_DATA_UPDATED 1
+ ************************************************************************/
+int UpdateSerCmdVal(void) {
+    char * readData = NULL;
+    int loopCount = 0;
+    serCmdVal = INPUT_KEY_NONE;
+    while(loopCount < DATA_UPDATED_MAX_COUNT) {
+        if( checkSerialRead() > 0 ) {
+            // シリアル受信データあり
+            readData = getReadBuffer(); // データ取得
+            if( readData != NULL ) {
+                split( &readData[0] );  // 取得データの分割
+                serCmdVal = serCmd[0];
+                memset( readData, 0x00, SERIAL_BUFFER_SIZE );
+                memset( &serCmd[0], 0x00, sizeof(int) * SERIAL_BUFFER_SIZE );
+                return SERIAL_DATA_UPDATED;
+            }
+        }
+        memset( &serCmd[0], 0x00, sizeof(int) * SERIAL_BUFFER_SIZE );
+        loopCount++;
+    }
+    return SERIAL_DATA_NOTUPDATE;
+}
 
 /***********************************************************************
  * 手の中に搭載している距離センサーをつかって、ターゲットを検索する
@@ -510,106 +642,122 @@ void FineTuningForArmPosition(void) {
 }
 
 
-void executeFunction(int inpurKey) {
-    switch (inpurKey) {
-        case INPUT_KEY_UP:
+void executeFunction(void) {
+    switch (serCmd[0]) {
+    case INPUT_KEY_UP:
         LOG_INFO("INPUT_KEY_UP\r\n");
         StraightMove();
         break;
-        case INPUT_KEY_DOWN:
+    case INPUT_KEY_DOWN:
         LOG_INFO("INPUT_KEY_DOWN\r\n");
         BackLowMove();
         break;
-        case INPUT_KEY_LEFT:
+    case INPUT_KEY_LEFT:
         LOG_INFO("INPUT_KEY_LEFT\r\n");
         LeftTurnMove();
         break;
-        case INPUT_KEY_RIGHT:
+    case INPUT_KEY_RIGHT:
         LOG_INFO("INPUT_KEY_RIGHT\r\n");
         RightTurnMove();
         break;
-        case INPUT_KEY_NONE:
+    case INPUT_KEY_STOP:
         LOG_INFO("INPUT_KEY_NONE\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_01:
+    case INPUT_KEY_MIN_UP:
+        LOG_INFO("INPUT_KEY_UP\r\n");
+        StraightMove();
+        break;
+    case INPUT_KEY_MIN_DOWN:
+        LOG_INFO("INPUT_KEY_DOWN\r\n");
+        BackLowMove();
+        break;
+    case INPUT_KEY_MIN_LEFT:
+        LOG_INFO("INPUT_KEY_LEFT\r\n");
+        LeftTurnMove();
+        break;
+    case INPUT_KEY_MIN_RIGHT:
+        LOG_INFO("INPUT_KEY_RIGHT\r\n");
+        RightTurnMove();
+        break;
+    case INPUT_KEY_ACTION_01:
         LOG_INFO("INPUT_KEY_ACTION_01\r\n");
         TargetFindingMove();
         break;
-        case INPUT_KEY_ACTION_02:
+    case INPUT_KEY_ACTION_02:
         LOG_INFO("INPUT_KEY_ACTION_02\r\n");
+        PutTargetOnTable();
+        break;
+    case INPUT_KEY_ACTION_03:
+        LOG_INFO("INPUT_KEY_ACTION_03\r\n");
         GrabWithHand();
         break;
-        case INPUT_KEY_ACTION_03:
-        LOG_INFO("INPUT_KEY_ACTION_03\r\n");
-        StopMove();
-        break;
-        case INPUT_KEY_ACTION_04:
+    case INPUT_KEY_ACTION_04:
         LOG_INFO("INPUT_KEY_ACTION_04\r\n");
-        StopMove();
+        OpenHand();
         break;
-        case INPUT_KEY_ACTION_05:
+    case INPUT_KEY_ACTION_05:
         LOG_INFO("INPUT_KEY_ACTION_05\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_06:
+    case INPUT_KEY_ACTION_06:
         LOG_INFO("INPUT_KEY_ACTION_06\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_07:
+    case INPUT_KEY_ACTION_07:
         LOG_INFO("INPUT_KEY_ACTION_07\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_08:
+    case INPUT_KEY_ACTION_08:
         LOG_INFO("INPUT_KEY_ACTION_08\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_09:
+    case INPUT_KEY_ACTION_09:
         LOG_INFO("INPUT_KEY_ACTION_09\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_10:
+    case INPUT_KEY_ACTION_10:
         LOG_INFO("INPUT_KEY_ACTION_10\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_11:
+    case INPUT_KEY_ACTION_11:
         LOG_INFO("INPUT_KEY_ACTION_11\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_12:
+    case INPUT_KEY_ACTION_12:
         LOG_INFO("INPUT_KEY_ACTION_12\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_13:
+    case INPUT_KEY_ACTION_13:
         LOG_INFO("INPUT_KEY_ACTION_13\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_14:
+    case INPUT_KEY_ACTION_14:
         LOG_INFO("INPUT_KEY_ACTION_14\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_15:
+    case INPUT_KEY_ACTION_15:
         LOG_INFO("INPUT_KEY_ACTION_15\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_16:
+    case INPUT_KEY_ACTION_16:
         LOG_INFO("INPUT_KEY_ACTION_16\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_17:
+    case INPUT_KEY_ACTION_17:
         LOG_INFO("INPUT_KEY_ACTION_17\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_18:
+    case INPUT_KEY_ACTION_18:
         LOG_INFO("INPUT_KEY_ACTION_18\r\n");
         StopMove();
         break;
-        case INPUT_KEY_ACTION_19:
+    case INPUT_KEY_ACTION_19:
         LOG_INFO("INPUT_KEY_ACTION_19\r\n");
         StopMove();
         break;
-        default:
-        LOG_INFO("Unknown inpurKey[%d]\r\n", inpurKey);
+    default:
+        LOG_INFO("Unknown inpurKey[%d]\r\n", serCmd[0]);
         StopMove();
         break;
     }

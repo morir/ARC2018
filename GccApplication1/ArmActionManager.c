@@ -22,7 +22,7 @@ void initArmMotor(void)
 	executeRotate(ELBOW_MOTOR, 100, 350, 10);
 	executeRotate(WRIST_MOTOR, 80, 320, 5);
 	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 1000);
-	executeRotate(HAND_MOTOR, 400, 780, 1000);
+	executeRotate(HAND_MOTOR, 300, 780, 1000);
 }
 
 /************************************************************************/
@@ -35,7 +35,7 @@ void FindFormationOnFloor(void)
 	executeRotate(ELBOW_MOTOR, 100, 350, 10);
 	executeRotate(WRIST_MOTOR, 80, 320, 5);
 	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 1000);
-	executeRotate(HAND_MOTOR, 400, 780, 1000);
+	executeRotate(HAND_MOTOR, 300, 780, 1000);
 }
 
 /************************************************************************/
