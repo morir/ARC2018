@@ -95,7 +95,7 @@ int main(void) {
         //}
     //}
 
-	initArmMotor();
+	//initArmMotor();
     LOG_INFO("initArmMotor END\r\n");
 
     executeMission();
@@ -269,7 +269,7 @@ int UpdateSerCmdVal(void) {
  * 
  ************************************************************************/
 void TargetFindingMove(void) {
-    const int maxAdjustStraightMoveCount = 100;//カメラ発見後の前進距離最大値を指定
+    const int maxAdjustStraightMoveCount = 150;//カメラ発見後の前進距離最大値を指定
     const int maxMoveWidthCount = 50;//旋回の幅を指定
     const int maxStraightMoveCount = 30;//旋回の幅を指定
     int left = 0, center = 0, right = 0;
@@ -422,8 +422,8 @@ void TargetFindingMove(void) {
     }
 
     // 少し前進する
-    StraightMove();
-    _delay_ms(200);//位置調整：手とターゲットがぶつかるくらい
+    StraightLowMove();
+    _delay_ms(400);//位置調整：手とターゲットがぶつかるくらい
     StopMove();
 
 }
@@ -436,25 +436,25 @@ void TargetFindingMove(void) {
 void PutTargetOnTable(void) {
     const int maxAdjustStraightMoveCount = 100;//カメラ発見後の前進距離最大値を指定
     const int maxMoveWidthCount = 50;//旋回の幅を指定
-    const int maxStraightMoveCount = 25;//旋回の幅を指定
+    const int maxStraightMoveCount = 30;//旋回の幅を指定
     int left = 0, center = 0, right = 0;
     int rihgtMoveCount = 0;
     int leftMoveCount = 0;
     int straightMoveCount = 0;
     int moveVal = 512;
+    int isFindOK = 0;
 
     StopMove();
     _delay_ms(100);
 
     // カメラ発見位置は、手から遠いのである程度直進する
-    while (straightMoveCount < maxAdjustStraightMoveCount)
-    {
+    while (straightMoveCount < maxAdjustStraightMoveCount) {
         GetAXS1SensorFireData(&left, &center, &right);
         _delay_ms(1);
-        if (right >= 250)
-        {
+        if (right >= 250) {
             StopMove();
             _delay_ms(100);
+            isFindOK = 1;
             //閾値を超えたら抜ける
             break;
         }
@@ -462,6 +462,8 @@ void PutTargetOnTable(void) {
         _delay_ms(1);
         straightMoveCount++;
     }
+    StopMove();
+    _delay_ms(1);
     straightMoveCount = 0;
 
     GetAXS1SensorFireData(&left, &center, &right);
@@ -469,18 +471,22 @@ void PutTargetOnTable(void) {
 
     while (center <= 250) {
         // ターゲット検索用に左右交互にアームを動かす
-            
+        
+        if (isFindOK > 0) {
+            break;
+        }
+
         // アームを右へ（右端まで）
-        while (rihgtMoveCount < maxMoveWidthCount)
-        {
+        while (rihgtMoveCount < maxMoveWidthCount) {
             GetAXS1SensorFireData(&left, &center, &right);
             _delay_ms(1);
             if (center >= 250)
             {
                 //閾値を超えたら、少し外側に動かして抜ける
-                moveVal = moveVal - 5;
+                moveVal = moveVal - 10;
                 executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
                 _delay_ms(1);
+                isFindOK = 1;
                 break;
             }
             moveVal = moveVal - 1;
@@ -493,13 +499,17 @@ void PutTargetOnTable(void) {
         _delay_ms(100);
 
         // アームを左へ（中央まで）：センサー値見なくても良いかも
-        while (leftMoveCount < maxMoveWidthCount)
-        {
+        if (isFindOK > 0) {
+            break;
+        }
+
+        while (leftMoveCount < maxMoveWidthCount) {
             GetAXS1SensorFireData(&left, &center, &right);
             _delay_ms(1);
             if (center >= 250)
             {
                 //閾値を超えたら抜ける
+                isFindOK = 1;
                 break;
             }
             moveVal = moveVal + 1;
@@ -518,8 +528,9 @@ void PutTargetOnTable(void) {
             if (center >= 250)
             {
                 //閾値を超えたら抜ける
-                moveVal = moveVal + 5;
+                moveVal = moveVal + 10;
                 executeRotate(H_MOV_SHOULDER_MOTOR, 50, moveVal, 1000);
+                isFindOK = 1;
                 break;
             }
             moveVal = moveVal + 1;
@@ -531,13 +542,17 @@ void PutTargetOnTable(void) {
         _delay_ms(100);
 
         // アームを右へ（中央へ）：センサー値見なくても良いかも
-        while (rihgtMoveCount < maxMoveWidthCount)
-        {
+        if (isFindOK > 0) {
+            break;
+        }
+
+        while (rihgtMoveCount < maxMoveWidthCount) {
             GetAXS1SensorFireData(&left, &center, &right);
             _delay_ms(1);
             if (center >= 250)
             {
                 //閾値を超えたら抜ける
+                isFindOK = 1;
                 break;
             }
             moveVal = moveVal - 1;
@@ -549,10 +564,14 @@ void PutTargetOnTable(void) {
         rihgtMoveCount = 0;
         _delay_ms(100);
 
+        if (isFindOK > 0) {
+            break;
+        }
+
         GetAXS1SensorFireData(&left, &center, &right);
         _delay_ms(1);
-        while (straightMoveCount < maxStraightMoveCount)
-        {
+
+        while (straightMoveCount < maxStraightMoveCount) {
             GetAXS1SensorFireData(&left, &center, &right);
             _delay_ms(1);
             if (center >= 250)
@@ -560,6 +579,7 @@ void PutTargetOnTable(void) {
                 StopMove();
                 _delay_ms(100);
                 //閾値を超えたら抜ける
+                isFindOK = 1;
                 break;
             }
             StraightMove();
@@ -567,6 +587,7 @@ void PutTargetOnTable(void) {
             straightMoveCount++;
         }
         straightMoveCount = 0;
+
         StopMove();
         _delay_ms(100);
 
@@ -600,7 +621,7 @@ void FineTuningForArmPosition(void) {
     {
         GetAXS1SensorFireData(&left, &center, &right);
         _delay_ms(1);
-        if (right < 200)
+        if (center < 120)
         {
             //閾値よりも小さくなったら抜ける
             LOG_INFO("FineTuning === 1=== rihgtMoveCount[%d] sensor[%d] moveVal[%d]\n", rihgtMoveCount, right, moveVal);
@@ -621,7 +642,7 @@ void FineTuningForArmPosition(void) {
     {
         GetAXS1SensorFireData(&left, &center, &right);
         _delay_ms(1);
-        if (right < 200)
+        if (center < 120)
         {
             //閾値を超えたら抜ける
             LOG_INFO("FineTuning === 2=== leftMoveCount[%d] sensor[%d] moveVal[%d]\n", leftMoveCount, right, moveVal);
@@ -666,19 +687,31 @@ void executeFunction(void) {
         break;
     case INPUT_KEY_MIN_UP:
         LOG_INFO("INPUT_KEY_UP\r\n");
-        StraightMove();
+        StraightLowMove();
+        _delay_ms(500);
+        StopMove();
         break;
     case INPUT_KEY_MIN_DOWN:
         LOG_INFO("INPUT_KEY_DOWN\r\n");
         BackLowMove();
+        _delay_ms(300);
+        StopMove();
         break;
     case INPUT_KEY_MIN_LEFT:
         LOG_INFO("INPUT_KEY_LEFT\r\n");
-        LeftTurnMove();
+        LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+        _delay_ms(350);
+        StopMove();
         break;
     case INPUT_KEY_MIN_RIGHT:
         LOG_INFO("INPUT_KEY_RIGHT\r\n");
-        RightTurnMove();
+    	RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
+        _delay_ms(250);
+        StopMove();
+        break;
+    case INPUT_KEY_ACTION_00:
+        LOG_INFO("INPUT_KEY_ACTION_01\r\n");
+        RunningFormation();
         break;
     case INPUT_KEY_ACTION_01:
         LOG_INFO("INPUT_KEY_ACTION_01\r\n");
@@ -687,6 +720,7 @@ void executeFunction(void) {
     case INPUT_KEY_ACTION_02:
         LOG_INFO("INPUT_KEY_ACTION_02\r\n");
         PutTargetOnTable();
+        FineTuningForArmPosition();
         break;
     case INPUT_KEY_ACTION_03:
         LOG_INFO("INPUT_KEY_ACTION_03\r\n");
@@ -698,63 +732,63 @@ void executeFunction(void) {
         break;
     case INPUT_KEY_ACTION_05:
         LOG_INFO("INPUT_KEY_ACTION_05\r\n");
-        StopMove();
+        TransportFormation();
         break;
     case INPUT_KEY_ACTION_06:
         LOG_INFO("INPUT_KEY_ACTION_06\r\n");
-        StopMove();
+        FindFormationOnFloor();
         break;
     case INPUT_KEY_ACTION_07:
         LOG_INFO("INPUT_KEY_ACTION_07\r\n");
-        StopMove();
+        FindFormationOnTable();
         break;
     case INPUT_KEY_ACTION_08:
         LOG_INFO("INPUT_KEY_ACTION_08\r\n");
-        StopMove();
+        UpperTargetFormation();
         break;
     case INPUT_KEY_ACTION_09:
         LOG_INFO("INPUT_KEY_ACTION_09\r\n");
-        StopMove();
+        DownLeverFormation();
         break;
     case INPUT_KEY_ACTION_10:
         LOG_INFO("INPUT_KEY_ACTION_10\r\n");
-        StopMove();
+        BaseSpeed = BaseSpeed - 10;
         break;
     case INPUT_KEY_ACTION_11:
         LOG_INFO("INPUT_KEY_ACTION_11\r\n");
-        StopMove();
+        BaseSpeed = BaseSpeed + 10;
         break;
     case INPUT_KEY_ACTION_12:
         LOG_INFO("INPUT_KEY_ACTION_12\r\n");
-        StopMove();
+        ShoulderLeft();
         break;
     case INPUT_KEY_ACTION_13:
         LOG_INFO("INPUT_KEY_ACTION_13\r\n");
-        StopMove();
+        ShoulderRight();
         break;
     case INPUT_KEY_ACTION_14:
         LOG_INFO("INPUT_KEY_ACTION_14\r\n");
-        StopMove();
+        ElbowUP();
         break;
     case INPUT_KEY_ACTION_15:
         LOG_INFO("INPUT_KEY_ACTION_15\r\n");
-        StopMove();
+        ElbowDown();
         break;
     case INPUT_KEY_ACTION_16:
         LOG_INFO("INPUT_KEY_ACTION_16\r\n");
-        StopMove();
+        HandDown();
         break;
     case INPUT_KEY_ACTION_17:
         LOG_INFO("INPUT_KEY_ACTION_17\r\n");
-        StopMove();
+        WristUP();
         break;
     case INPUT_KEY_ACTION_18:
         LOG_INFO("INPUT_KEY_ACTION_18\r\n");
-        StopMove();
+        WristDown();
         break;
     case INPUT_KEY_ACTION_19:
         LOG_INFO("INPUT_KEY_ACTION_19\r\n");
-        StopMove();
+        HandUP();
         break;
     default:
         LOG_INFO("Unknown inpurKey[%d]\r\n", serCmd[0]);

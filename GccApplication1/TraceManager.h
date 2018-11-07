@@ -20,7 +20,7 @@
 #define INPUT_KEY_MIN_LEFT      82
 #define INPUT_KEY_MIN_RIGHT     83
 #define INPUT_KEY_MIN_DOWN      84
-#define INPUT_KEY_NONE          0
+#define INPUT_KEY_ACTION_00     0
 #define INPUT_KEY_ACTION_01     1
 #define INPUT_KEY_ACTION_02     2
 #define INPUT_KEY_ACTION_03     3
@@ -40,6 +40,7 @@
 #define INPUT_KEY_ACTION_17     17
 #define INPUT_KEY_ACTION_18     18
 #define INPUT_KEY_ACTION_19     19
+#define INPUT_KEY_NONE          100
 
 // ------------------ Global variables ------------------
 

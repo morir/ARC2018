@@ -79,8 +79,8 @@
 // Speed settings
 #define BASE_SPEED_INIT_VAL		(50)	//ベース速度の初期値
 #define MAX_SPEED               (100)
-#define TURN_SPEED_BASE			(50)	//旋回のベース速度
-#define SLOW_STRAIGHT_VAL       (70)	//旋回位置微調整で動作する速度(前進用)
+#define TURN_SPEED_BASE			(20)	//旋回のベース速度
+#define SLOW_STRAIGHT_VAL       (20)	//旋回位置微調整で動作する速度(前進用)
 #define SLOW_BACK_VAL	        (50)	//旋回位置微調整で動作する速度(後進用)
 
 // ------------------ Method Definition ------------------

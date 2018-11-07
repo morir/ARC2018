@@ -19,10 +19,10 @@
 void initArmMotor(void) 
 {
 	executeRotate(WRIST_MOTOR, 180, 260, 5);
-	executeRotate(ELBOW_MOTOR, 100, 350, 10);
-	executeRotate(WRIST_MOTOR, 80, 320, 5);
+	executeRotate(ELBOW_MOTOR, 100, 350, 20);
+	executeRotate(WRIST_MOTOR, 80, 320, 10);
 	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 1000);
-	executeRotate(HAND_MOTOR, 300, 780, 1000);
+	//executeRotate(HAND_MOTOR, 250, 780, 1000);
 }
 
 /************************************************************************/
@@ -32,10 +32,10 @@ void initArmMotor(void)
 void FindFormationOnFloor(void)
 {
 	executeRotate(WRIST_MOTOR, 180, 260, 5);
-	executeRotate(ELBOW_MOTOR, 100, 350, 10);
-	executeRotate(WRIST_MOTOR, 80, 320, 5);
+	executeRotate(ELBOW_MOTOR, 100, 350, 20);
+	executeRotate(WRIST_MOTOR, 80, 320, 10);
 	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 1000);
-	executeRotate(HAND_MOTOR, 300, 780, 1000);
+	//executeRotate(HAND_MOTOR, 250, 780, 1000);
 }
 
 /************************************************************************/
@@ -44,11 +44,11 @@ void FindFormationOnFloor(void)
 /************************************************************************/
 void FindFormationOnTable(void)
 {
-	executeRotate(WRIST_MOTOR, 180, 260, 5);
-    executeRotate(ELBOW_MOTOR, 50, 460, 10);
-    executeRotate(WRIST_MOTOR, 50, 430, 10);
+	executeRotate(WRIST_MOTOR, 180, 300, 10);
+    executeRotate(ELBOW_MOTOR, 50, 465, 30);
+    executeRotate(WRIST_MOTOR, 50, 430, 20);
 	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 1000);
-	executeRotate(HAND_MOTOR, 400, 780, 1000);
+	//executeRotate(HAND_MOTOR, 250, 780, 1000);
 }
 
 /************************************************************************/
@@ -57,7 +57,7 @@ void FindFormationOnTable(void)
 /************************************************************************/
 void TransportFormation(void)
 {
-    executeRotate(WRIST_MOTOR, 120, 300, 10);
+    executeRotate(WRIST_MOTOR, 120, 300, 20);
     executeRotate(ELBOW_MOTOR, 100, 535, 100);
     executeRotate(WRIST_MOTOR, 60, 490, 20);
     executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
@@ -70,8 +70,9 @@ void TransportFormation(void)
 void GrabWithHand(void)
 {
 	// 手を閉じる
-	executeRotate(HAND_MOTOR, 300, 670, 10);
-	executeRotate(HAND_MOTOR, 120, 570, 10);
+	executeRotate(HAND_MOTOR, 250, 620, 10);
+	executeRotate(HAND_MOTOR, 80, 590, 10);
+	executeRotate(HAND_MOTOR, 40, 570, 10);
 }
 
 /************************************************************************/
@@ -81,8 +82,8 @@ void GrabWithHand(void)
 void OpenHand(void)
 {
     // 手を開く
-    executeRotate(HAND_MOTOR, 40, 600, 10);
-    executeRotate(HAND_MOTOR, 120, 650, 10);
+    executeRotate(HAND_MOTOR, 30, 600, 10);
+    executeRotate(HAND_MOTOR, 50, 650, 10);
     executeRotate(HAND_MOTOR, 250, 780, 1000);
 }
 
@@ -92,11 +93,104 @@ void OpenHand(void)
 /************************************************************************/
 void DownLeverFormation(void)
 {
-    executeRotate(WRIST_MOTOR, 120, 300, 10);
-    executeRotate(ELBOW_MOTOR, 100, 535, 100);
-    executeRotate(WRIST_MOTOR, 60, 490, 20);
+    executeRotate(ELBOW_MOTOR, 100, 512, 10);
+    executeRotate(WRIST_MOTOR, 100, 512, 100);
+    executeRotate(ELBOW_MOTOR, 100, 650, 10);
+
+    executeRotate(WRIST_MOTOR, 100, 540, 100);
+
+    executeRotate(ELBOW_MOTOR, 100, 720, 100);
+    executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
+    executeRotate(HAND_MOTOR, 250, 780, 1000);
+}
+
+/************************************************************************/
+// 収穫エリアで上にぶら下がっているターゲット回収用の形態
+// 手を高く上げる
+/************************************************************************/
+void UpperTargetFormation(void)
+{
+    executeRotate(WRIST_MOTOR, 120, 260, 10);
+    executeRotate(ELBOW_MOTOR, 100, 520, 100);
     executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
 }
+
+/************************************************************************/
+// 走行用の形態
+// 手首を上げてカメラを前方に向ける
+/************************************************************************/
+void RunningFormation(void) {
+    int currentAngle = GetCurrentAngle(ELBOW_MOTOR);// 現在の角度を更新
+    _delay_ms(1);//適切なウェイト時間を設定
+    if (currentAngle > 700) {
+    	executeRotate(ELBOW_MOTOR, 100, 620, 20);
+    }
+
+    currentAngle = GetCurrentAngle(WRIST_MOTOR);// 現在の角度を更新
+    _delay_ms(1);//適切なウェイト時間を設定
+    if (currentAngle > 700) {
+        executeRotate(WRIST_MOTOR, 100, 480, 20);
+    }
+
+    currentAngle = GetCurrentAngle(ELBOW_MOTOR);// 現在の角度を更新
+    _delay_ms(1);//適切なウェイト時間を設定
+    if (currentAngle > 600) {
+        executeRotate(ELBOW_MOTOR, 100, 512, 20);
+    }
+
+	executeRotate(WRIST_MOTOR, 80, 260, 10);
+	executeRotate(ELBOW_MOTOR, 100, 400, 20);
+	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 1000);
+}
+
+void HandUP(void) {
+    int currentAngle = GetCurrentAngle(HAND_MOTOR);// 現在の角度を更新
+    _delay_ms(1);//適切なウェイト時間を設定
+	MotorControlJoint( HAND_MOTOR, JointMoveBaseSpeed, currentAngle + 17 );
+}
+
+void HandDown(void) {
+    int currentAngle = GetCurrentAngle(HAND_MOTOR);// 現在の角度を更新
+    _delay_ms(1);//適切なウェイト時間を設定
+    MotorControlJoint( HAND_MOTOR, JointMoveBaseSpeed, currentAngle - 11 );
+}
+
+void WristUP(void) {
+    int currentAngle = GetCurrentAngle(WRIST_MOTOR);// 現在の角度を更新
+    _delay_ms(1);//適切なウェイト時間を設定
+    MotorControlJoint( WRIST_MOTOR, JointMoveBaseSpeed, currentAngle - 17 );
+}
+
+void WristDown(void) {
+    int currentAngle = GetCurrentAngle(WRIST_MOTOR);// 現在の角度を更新
+    _delay_ms(1);//適切なウェイト時間を設定
+    MotorControlJoint( WRIST_MOTOR, JointMoveBaseSpeed, currentAngle + 11 );
+}
+
+void ElbowUP(void) {
+    int currentAngle = GetCurrentAngle(ELBOW_MOTOR);// 現在の角度を更新
+    _delay_ms(1);//適切なウェイト時間を設定
+    MotorControlJoint( ELBOW_MOTOR, JointMoveBaseSpeed, currentAngle + 17 );
+}
+
+void ElbowDown(void) {
+    int currentAngle = GetCurrentAngle(ELBOW_MOTOR);// 現在の角度を更新
+    _delay_ms(1);//適切なウェイト時間を設定
+    MotorControlJoint( ELBOW_MOTOR, JointMoveBaseSpeed, currentAngle - 11 );
+}
+
+void ShoulderLeft(void) {
+    int currentAngle = GetCurrentAngle(H_MOV_SHOULDER_MOTOR);// 現在の角度を更新
+    _delay_ms(1);//適切なウェイト時間を設定
+    MotorControlJoint( H_MOV_SHOULDER_MOTOR, JointMoveBaseSpeed, currentAngle + 13 );
+}
+
+void ShoulderRight(void) {
+    int currentAngle = GetCurrentAngle(H_MOV_SHOULDER_MOTOR);// 現在の角度を更新
+    _delay_ms(1);//適切なウェイト時間を設定
+    MotorControlJoint( H_MOV_SHOULDER_MOTOR, JointMoveBaseSpeed, currentAngle - 11 );
+}
+
 
 /************************************************************************/
 // 宝物回収＆搭載用形態

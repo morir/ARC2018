@@ -26,7 +26,8 @@
 #define CTRL_TBL_ADDR_PRESENT_LOAD_H        (41)    // 現在負荷上位ビット
 
 
-#define CorrectionValue		(20) // 補正値
+#define CorrectionValue		    (20) // 補正値
+#define JointMoveBaseSpeed		(40) // 
 
 // ------------------ Method Definition ------------------
 void initArmMotor(void);
@@ -67,6 +68,31 @@ void OpenHand(void);
 // 手を高く上げる
 /************************************************************************/
 void DownLeverFormation(void);
+
+/************************************************************************/
+// 収穫エリアで上にぶら下がっているターゲット回収用の形態
+// 手を高く上げる
+/************************************************************************/
+void UpperTargetFormation(void);
+
+/************************************************************************/
+// 走行用の形態
+// 手首を上げてカメラを前方に向ける
+/************************************************************************/
+void RunningFormation(void);
+
+
+void HandUP(void);
+void HandDown(void);
+
+void WristUP(void);
+void WristDown(void);
+
+void ElbowUP(void);
+void ElbowDown(void);
+
+void ShoulderLeft(void);
+void ShoulderRight(void);
 
 void CatchAndReleaseFormation(void);
 
