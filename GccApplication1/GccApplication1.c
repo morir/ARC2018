@@ -856,9 +856,19 @@ void SerialControl(void) {
         BackLowMove();
         LOG_INFO("SerialControl RightTurnMove() inpurKey[%d]\r\n", serCmdVal);
         break;
+        case INPUT_KEY_ACTION_01:
+        LOG_INFO("INPUT_KEY_ACTION_01\r\n");
+        TargetFindingMove();
+        break;
+        case INPUT_KEY_ACTION_02:
+        LOG_INFO("INPUT_KEY_ACTION_02\r\n");
+        PutTargetOnTable();
+        FineTuningForArmPosition();
+        break;
         default:
         //MakeBuzzer(serCmd[0], 5);
         LOG_INFO("SerialControl StopMove()inpurKey[%d]\r\n", serCmdVal);
+        executeFinalAction();
         StopMove();
         break;
     }
