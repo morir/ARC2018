@@ -80,8 +80,8 @@
 #define BASE_SPEED_INIT_VAL		(50)	//ベース速度の初期値
 #define MAX_SPEED               (100)
 #define TURN_SPEED_BASE			(20)	//旋回のベース速度
-#define SLOW_STRAIGHT_VAL       (20)	//旋回位置微調整で動作する速度(前進用)
-#define SLOW_BACK_VAL	        (50)	//旋回位置微調整で動作する速度(後進用)
+#define SLOW_STRAIGHT_VAL       (100)	//微調整で動作する速度(前進用)
+#define SLOW_BACK_VAL	        (80)	//微調整で動作する速度(後進用)
 
 // ------------------ Method Definition ------------------
 void MotorInit(void);
@@ -89,7 +89,7 @@ void MotorControl(int id, int power);
 void MotorControlJoint(int id, int speed, int position);
 
 void AXS1SoundControl(int id, int scale, int length);
-
+void MakeBuzzer(int scale, int length);
 
 void Execute(int type);
 void StopMove(void);

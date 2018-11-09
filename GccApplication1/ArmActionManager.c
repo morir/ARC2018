@@ -69,10 +69,23 @@ void TransportFormation(void)
 /************************************************************************/
 void GrabWithHand(void)
 {
-	// 手を閉じる
-	executeRotate(HAND_MOTOR, 250, 620, 10);
-	executeRotate(HAND_MOTOR, 80, 590, 10);
-	executeRotate(HAND_MOTOR, 40, 570, 10);
+    int currentAngle = GetCurrentAngle(HAND_MOTOR);// 現在の角度を更新
+    _delay_ms(1);//適切なウェイト時間を設定
+    if (currentAngle > 650) {
+	    // 手を閉じる(ゆっくり)
+	    executeRotate(HAND_MOTOR, 250, 620, 10);
+	    executeRotate(HAND_MOTOR, 80, 590, 10);
+    }        
+    executeRotate(HAND_MOTOR, 40, 570, 10);
+}
+
+/************************************************************************/
+// 手を強く閉じる（レバー用）
+// 他の関節は動かさない
+/************************************************************************/
+void StrongGrabWithHand(void)
+{
+    executeRotate(HAND_MOTOR, 200, 590, 20);
 }
 
 /************************************************************************/
@@ -81,9 +94,13 @@ void GrabWithHand(void)
 /************************************************************************/
 void OpenHand(void)
 {
-    // 手を開く
-    executeRotate(HAND_MOTOR, 30, 600, 10);
-    executeRotate(HAND_MOTOR, 50, 650, 10);
+    int currentAngle = GetCurrentAngle(HAND_MOTOR);// 現在の角度を更新
+    _delay_ms(1);//適切なウェイト時間を設定
+    if (currentAngle < 600) {
+        // 手を開く(ゆっくり)
+        executeRotate(HAND_MOTOR, 20, 600, 10);
+        executeRotate(HAND_MOTOR, 40, 650, 10);
+    }
     executeRotate(HAND_MOTOR, 250, 780, 1000);
 }
 
@@ -106,12 +123,23 @@ void DownLeverFormation(void)
 
 /************************************************************************/
 // 収穫エリアで上にぶら下がっているターゲット回収用の形態
-// 手を高く上げる
+// 手を高く上げる UpperTargetFormationDownから少し上げる
 /************************************************************************/
-void UpperTargetFormation(void)
+void UpperTargetFormationUP(void)
 {
-    executeRotate(WRIST_MOTOR, 120, 260, 10);
-    executeRotate(ELBOW_MOTOR, 100, 520, 100);
+    executeRotate(WRIST_MOTOR, 120, 260, 20);
+    executeRotate(ELBOW_MOTOR, 100, 550, 100);
+    executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
+}
+
+/************************************************************************/
+// 収穫エリアで上にぶら下がっているターゲット回収用の形態
+// 手を高く上げる UpperTargetFormationUP から少し下げる
+/************************************************************************/
+void UpperTargetFormationDown(void)
+{
+    executeRotate(WRIST_MOTOR, 120, 230, 20);
+    executeRotate(ELBOW_MOTOR, 100, 490, 100);
     executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 10);
 }
 
@@ -182,13 +210,13 @@ void ElbowDown(void) {
 void ShoulderLeft(void) {
     int currentAngle = GetCurrentAngle(H_MOV_SHOULDER_MOTOR);// 現在の角度を更新
     _delay_ms(1);//適切なウェイト時間を設定
-    MotorControlJoint( H_MOV_SHOULDER_MOTOR, JointMoveBaseSpeed, currentAngle + 13 );
+    MotorControlJoint( H_MOV_SHOULDER_MOTOR, JointMoveBaseSpeed, currentAngle + 11 );
 }
 
 void ShoulderRight(void) {
     int currentAngle = GetCurrentAngle(H_MOV_SHOULDER_MOTOR);// 現在の角度を更新
     _delay_ms(1);//適切なウェイト時間を設定
-    MotorControlJoint( H_MOV_SHOULDER_MOTOR, JointMoveBaseSpeed, currentAngle - 11 );
+    MotorControlJoint( H_MOV_SHOULDER_MOTOR, JointMoveBaseSpeed, currentAngle - 7 );
 }
 
 

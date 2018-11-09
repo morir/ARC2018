@@ -34,6 +34,8 @@ int UpdateSerCmdVal(void);
 void TargetFindingMove(void);
 void PutTargetOnTable(void);
 void FineTuningForArmPosition(void);
+void FrontSencorValCheck(void);
+void BelowSencorValCheck(void);
 
 int Trim(char *s);
 void split( char * s1 );
@@ -168,37 +170,6 @@ void split( char * s1 ) {
     }
 }
 
-// シリアルデータの取得結果によって動作を分ける
-// 動作確認用
-void SerialControl(void) {
-    switch (serCmdVal) {
-        case INPUT_KEY_STOP:
-            StopMove();
-            LOG_INFO("SerialControl StopMove() inpurKey[%d]\r\n", serCmdVal);
-            break;
-        case INPUT_KEY_UP:
-            StraightMove();
-            LOG_INFO("SerialControl StraightMove() inpurKey[%d]\r\n", serCmdVal);
-            break;
-        case INPUT_KEY_DOWN:
-            LeftTurnMove();
-            LOG_INFO("SerialControl BackLowMove() inpurKey[%d]\r\n", serCmdVal);
-            break;
-        case INPUT_KEY_LEFT:
-            RightTurnMove();
-            LOG_INFO("SerialControl LeftTurnMove() inpurKey[%d]\r\n", serCmdVal);
-            break;
-        case INPUT_KEY_RIGHT:
-            BackLowMove();
-            LOG_INFO("SerialControl RightTurnMove() inpurKey[%d]\r\n", serCmdVal);
-            break;
-        default:
-            //MakeBuzzer(serCmd[0], 5);
-            LOG_INFO("SerialControl StopMove()inpurKey[%d]\r\n", serCmdVal);
-            StopMove();
-        break;
-    }
-}
 
 void executeMission(void) {
     char * readData = NULL;
@@ -661,6 +632,66 @@ void FineTuningForArmPosition(void) {
 
     return;
 }
+void FrontSencorValCheck(void) {
+    int left = 0, center = 0, right = 0;
+    GetAXS1SensorFireData(&left, &center, &right);
+    _delay_ms(1);
+    if (right > 240) {
+        MakeBuzzer(44,3);
+        _delay_ms(300);
+        MakeBuzzer(44,3);
+        _delay_ms(300);
+    } else if (right > 220) {
+        MakeBuzzer(37,3);
+        _delay_ms(300);
+        MakeBuzzer(37,3);
+        _delay_ms(300);
+    } else if (right > 180) {
+        MakeBuzzer(27,3);
+        _delay_ms(300);
+        MakeBuzzer(27,3);
+        _delay_ms(300);
+    } else if (right > 120) {
+        MakeBuzzer(15,4);
+        _delay_ms(400);
+        MakeBuzzer(15,4);
+        _delay_ms(400);
+    } else if (right <= 120){
+        MakeBuzzer(2,7);
+        _delay_ms(700);
+    }
+}
+
+void BelowSencorValCheck(void) {
+    int left = 0, center = 0, right = 0;
+    GetAXS1SensorFireData(&left, &center, &right);
+    _delay_ms(1);
+    if (center > 240) {
+        MakeBuzzer(44,3);
+        _delay_ms(300);
+        MakeBuzzer(44,3);
+        _delay_ms(300);
+    } else if (center > 220) {
+        MakeBuzzer(37,3);
+        _delay_ms(300);
+        MakeBuzzer(37,3);
+        _delay_ms(300);
+    } else if (center > 180) {
+        MakeBuzzer(27,3);
+        _delay_ms(300);
+        MakeBuzzer(27,3);
+        _delay_ms(300);
+    } else if (center > 120) {
+        MakeBuzzer(15,4);
+        _delay_ms(400);
+        MakeBuzzer(15,4);
+        _delay_ms(400);
+    } else if (center <= 120) {
+        MakeBuzzer(2,7);
+        _delay_ms(700);
+    }
+
+}
 
 
 void executeFunction(void) {
@@ -688,25 +719,25 @@ void executeFunction(void) {
     case INPUT_KEY_MIN_UP:
         LOG_INFO("INPUT_KEY_UP\r\n");
         StraightLowMove();
-        _delay_ms(500);
+        _delay_ms(80);
         StopMove();
         break;
     case INPUT_KEY_MIN_DOWN:
         LOG_INFO("INPUT_KEY_DOWN\r\n");
         BackLowMove();
-        _delay_ms(300);
+        _delay_ms(70);
         StopMove();
         break;
     case INPUT_KEY_MIN_LEFT:
         LOG_INFO("INPUT_KEY_LEFT\r\n");
         LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-        _delay_ms(350);
+        _delay_ms(80);
         StopMove();
         break;
     case INPUT_KEY_MIN_RIGHT:
         LOG_INFO("INPUT_KEY_RIGHT\r\n");
     	RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-        _delay_ms(250);
+        _delay_ms(70);
         StopMove();
         break;
     case INPUT_KEY_ACTION_00:
@@ -715,12 +746,14 @@ void executeFunction(void) {
         break;
     case INPUT_KEY_ACTION_01:
         LOG_INFO("INPUT_KEY_ACTION_01\r\n");
-        TargetFindingMove();
+        //TargetFindingMove();
+        UpperTargetFormationDown();
         break;
     case INPUT_KEY_ACTION_02:
         LOG_INFO("INPUT_KEY_ACTION_02\r\n");
-        PutTargetOnTable();
-        FineTuningForArmPosition();
+        //PutTargetOnTable();
+        //FineTuningForArmPosition();
+        StrongGrabWithHand();
         break;
     case INPUT_KEY_ACTION_03:
         LOG_INFO("INPUT_KEY_ACTION_03\r\n");
@@ -744,7 +777,7 @@ void executeFunction(void) {
         break;
     case INPUT_KEY_ACTION_08:
         LOG_INFO("INPUT_KEY_ACTION_08\r\n");
-        UpperTargetFormation();
+        UpperTargetFormationUP();
         break;
     case INPUT_KEY_ACTION_09:
         LOG_INFO("INPUT_KEY_ACTION_09\r\n");
@@ -752,11 +785,13 @@ void executeFunction(void) {
         break;
     case INPUT_KEY_ACTION_10:
         LOG_INFO("INPUT_KEY_ACTION_10\r\n");
-        BaseSpeed = BaseSpeed - 10;
+        //BaseSpeed = BaseSpeed - 10;
+        FrontSencorValCheck();
         break;
     case INPUT_KEY_ACTION_11:
         LOG_INFO("INPUT_KEY_ACTION_11\r\n");
-        BaseSpeed = BaseSpeed + 10;
+        //BaseSpeed = BaseSpeed + 10;
+        BelowSencorValCheck();
         break;
     case INPUT_KEY_ACTION_12:
         LOG_INFO("INPUT_KEY_ACTION_12\r\n");
@@ -792,6 +827,38 @@ void executeFunction(void) {
         break;
     default:
         LOG_INFO("Unknown inpurKey[%d]\r\n", serCmd[0]);
+        StopMove();
+        break;
+    }
+}
+
+// シリアルデータの取得結果によって動作を分ける
+// 動作確認用
+void SerialControl(void) {
+    switch (serCmdVal) {
+        case INPUT_KEY_STOP:
+        StopMove();
+        LOG_INFO("SerialControl StopMove() inpurKey[%d]\r\n", serCmdVal);
+        break;
+        case INPUT_KEY_UP:
+        StraightMove();
+        LOG_INFO("SerialControl StraightMove() inpurKey[%d]\r\n", serCmdVal);
+        break;
+        case INPUT_KEY_DOWN:
+        LeftTurnMove();
+        LOG_INFO("SerialControl BackLowMove() inpurKey[%d]\r\n", serCmdVal);
+        break;
+        case INPUT_KEY_LEFT:
+        RightTurnMove();
+        LOG_INFO("SerialControl LeftTurnMove() inpurKey[%d]\r\n", serCmdVal);
+        break;
+        case INPUT_KEY_RIGHT:
+        BackLowMove();
+        LOG_INFO("SerialControl RightTurnMove() inpurKey[%d]\r\n", serCmdVal);
+        break;
+        default:
+        //MakeBuzzer(serCmd[0], 5);
+        LOG_INFO("SerialControl StopMove()inpurKey[%d]\r\n", serCmdVal);
         StopMove();
         break;
     }
