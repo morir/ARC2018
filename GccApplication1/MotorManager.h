@@ -77,10 +77,10 @@
 #define BASE_SPEED_BY_SLOWMOVE (90)    //芝エリア前のセクションのMAXベース速度
 
 // Speed settings
-#define BASE_SPEED_INIT_VAL		(50)	//ベース速度の初期値
+#define BASE_SPEED_INIT_VAL		(100)	//ベース速度の初期値
 #define MAX_SPEED               (100)
-#define TURN_SPEED_BASE			(20)	//旋回のベース速度
-#define SLOW_STRAIGHT_VAL       (100)	//微調整で動作する速度(前進用)
+#define TURN_SPEED_BASE			(60)	//旋回のベース速度
+#define SLOW_STRAIGHT_VAL       (200)	//微調整で動作する速度(前進用)
 #define SLOW_BACK_VAL	        (80)	//微調整で動作する速度(後進用)
 
 // ------------------ Method Definition ------------------

@@ -27,7 +27,7 @@
 
 
 #define CorrectionValue		    (20) // ï‚ê≥íl
-#define JointMoveBaseSpeed		(100) // 
+#define JointMoveBaseSpeed		(200) // 
 
 // ------------------ Method Definition ------------------
 void initArmMotor(void);

@@ -191,16 +191,6 @@ void executeMission(void) {
         //getInputKey(&inputKey);
         //executeFunction(inputKey);
 
-        //TargetFindingMove();
-        //_delay_ms(500);
-
-        //GrabWithHand();
-        //_delay_ms(1000);
-
-        //TransportFormation();
-        //PutTargetOnTable();
-        //OpenHand();
-        //return;
     }
 }
 
@@ -632,6 +622,12 @@ void FineTuningForArmPosition(void) {
 
     return;
 }
+
+
+/************************************************************************/
+// 前方の距離センサーを確認
+// 距離が近いほど高い音が鳴る
+/************************************************************************/
 void FrontSencorValCheck(void) {
     int left = 0, center = 0, right = 0;
     GetAXS1SensorFireData(&left, &center, &right);
@@ -662,6 +658,10 @@ void FrontSencorValCheck(void) {
     }
 }
 
+/************************************************************************/
+// 下方の距離センサーを確認
+// 距離が近いほど高い音が鳴る
+/************************************************************************/
 void BelowSencorValCheck(void) {
     int left = 0, center = 0, right = 0;
     GetAXS1SensorFireData(&left, &center, &right);
@@ -694,6 +694,10 @@ void BelowSencorValCheck(void) {
 }
 
 
+/************************************************************************/
+// 各アクションを実行
+// シリアル経由で入力された値に応じたアクションを行う。
+/************************************************************************/
 void executeFunction(void) {
     switch (serCmd[0]) {
     case INPUT_KEY_UP:
@@ -719,25 +723,25 @@ void executeFunction(void) {
     case INPUT_KEY_MIN_UP:
         LOG_INFO("INPUT_KEY_UP\r\n");
         StraightLowMove();
-        _delay_ms(80);
+        _delay_ms(60);//モータの動きは速くして時間を短くする
         StopMove();
         break;
     case INPUT_KEY_MIN_DOWN:
         LOG_INFO("INPUT_KEY_DOWN\r\n");
         BackLowMove();
-        _delay_ms(70);
+        _delay_ms(50);//モータの動きは速くして時間を短くする
         StopMove();
         break;
     case INPUT_KEY_MIN_LEFT:
         LOG_INFO("INPUT_KEY_LEFT\r\n");
         LeftTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-        _delay_ms(80);
+        _delay_ms(80);//モータの動きは速くして時間を短くする
         StopMove();
         break;
     case INPUT_KEY_MIN_RIGHT:
         LOG_INFO("INPUT_KEY_RIGHT\r\n");
     	RightTurnSlowMove(SLOW_TURN_RATE_BY_BASE);
-        _delay_ms(70);
+        _delay_ms(70);//モータの動きは速くして時間を短くする
         StopMove();
         break;
     case INPUT_KEY_ACTION_00:
@@ -746,7 +750,7 @@ void executeFunction(void) {
         break;
     case INPUT_KEY_ACTION_01:
         LOG_INFO("INPUT_KEY_ACTION_01\r\n");
-        //TargetFindingMove();
+        //TargetFindingMove();//当初予定していたアクション
         UpperTargetFormationDown();
         break;
     case INPUT_KEY_ACTION_02:

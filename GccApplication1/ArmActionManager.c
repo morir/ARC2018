@@ -20,7 +20,7 @@ void initArmMotor(void)
 {
 	executeRotate(WRIST_MOTOR, 180, 260, 5);
 	executeRotate(ELBOW_MOTOR, 100, 350, 20);
-	executeRotate(WRIST_MOTOR, 80, 320, 10);
+	executeRotate(WRIST_MOTOR, 80, 310, 10);
 	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 1000);
 	//executeRotate(HAND_MOTOR, 250, 780, 1000);
 }
@@ -33,7 +33,7 @@ void FindFormationOnFloor(void)
 {
 	executeRotate(WRIST_MOTOR, 180, 260, 5);
 	executeRotate(ELBOW_MOTOR, 100, 350, 20);
-	executeRotate(WRIST_MOTOR, 80, 320, 10);
+	executeRotate(WRIST_MOTOR, 80, 310, 10);
 	executeRotate(H_MOV_SHOULDER_MOTOR, 50, 512, 1000);
 	//executeRotate(HAND_MOTOR, 250, 780, 1000);
 }
@@ -85,7 +85,7 @@ void GrabWithHand(void)
 /************************************************************************/
 void StrongGrabWithHand(void)
 {
-    executeRotate(HAND_MOTOR, 200, 590, 20);
+    executeRotate(HAND_MOTOR, 200, 590, 20);//どこまで閉じれば良いかは要調整
 }
 
 /************************************************************************/
@@ -198,7 +198,7 @@ void WristDown(void) {
 void ElbowUP(void) {
     int currentAngle = GetCurrentAngle(ELBOW_MOTOR);// 現在の角度を更新
     _delay_ms(1);//適切なウェイト時間を設定
-    MotorControlJoint( ELBOW_MOTOR, JointMoveBaseSpeed, currentAngle + 17 );
+    MotorControlJoint( ELBOW_MOTOR, JointMoveBaseSpeed, currentAngle + 23 );
 }
 
 void ElbowDown(void) {
@@ -278,6 +278,8 @@ void Debug_AllMotorCurrentAngle(void)
  * @param allowRange    許容角度(次ステップへ進んで良い角度) 
  */
 void executeRotate(int motorId, int speed, int angle, int allowRange){
+    int count = 0;
+    int const MAX_COUNT = 80;
 	//設定角度への動作を実行
 	MotorControlJoint( motorId, speed, angle );
 
@@ -298,11 +300,16 @@ void executeRotate(int motorId, int speed, int angle, int allowRange){
         // 目標角度に達していない間は動作する
         while(1)
         {
+            if (count > MAX_COUNT) {
+                // 一定回数ループしたら抜ける
+                break;
+            }
             if (currentAngle >= (angle - allowRange))
             {
                 LOG_INFO("executeRotate 2-1 Low[%d] currentAngle[%d] High[%d]\n", (angle - allowRange), currentAngle, (angle + allowRange));
                 break;
             }
+            count++;
     	    _delay_ms(5);//適切なウェイト時間を設定
     	    currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
             LOG_INFO("executeRotate 2 Low[%d] currentAngle[%d] High[%d]\n", (angle - allowRange), currentAngle, (angle + allowRange));
@@ -314,11 +321,16 @@ void executeRotate(int motorId, int speed, int angle, int allowRange){
         // 目標角度に達していない間は動作する
         while(1)
         {
+            if (count > MAX_COUNT) {
+                // 一定回数ループしたら抜ける
+                break;
+            }
             if (currentAngle <= (angle + allowRange))
             {
                 LOG_INFO("executeRotate 3-1 Low[%d] currentAngle[%d] High[%d]\n", (angle - allowRange), currentAngle, (angle + allowRange));
                 break;
             }
+            count++;
     	    _delay_ms(5);//適切なウェイト時間を設定
     	    currentAngle = GetCurrentAngle(motorId);// 現在の角度を更新
             LOG_INFO("executeRotate 3 Low[%d] currentAngle[%d] High[%d]\n", (angle - allowRange), currentAngle, (angle + allowRange));
